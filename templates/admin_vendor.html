@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Diripemiiser</title>
+</head>
+<body>
+<h4>=◉デリペミッサァ</h4>
+<h4>ログイン中：　　ログアウト</h4>
+<p>管理者 ー 仕入先一覧</p>
+<p>-------------------------</p>
+<p>-------------------------</p>
+
+<form action="" method="get">
+    <input type="search" name="search" placeholder="🔍住所検索">
+</form>
+
+<style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+    <h3>仕入先一覧表</h3>
+    <button onclick="generateTable()">表示</button>
+
+    <div id="tableContainer"></div>
+
+    <script>
+        function generateTable() {
+            // ここで仮に3つの仕入先のデータを設定します
+            const suppliers = [
+                { id: "ID1", name: "Name1", address: "Address1", phone: "000-1111-1111", capital: "100000", days: "5" },
+                { id: "ID2", name: "Name2", address: "Address2", phone: "000-2222-2222", capital: "200000", days: "6" },
+                { id: "ID3", name: "Name3", address: "Address3", phone: "000-3333-3333", capital: "300000", days: "7" }
+            ];
+
+            const tableContainer = document.getElementById('tableContainer');
+            tableContainer.innerHTML = ""; // 既存の表をクリア
+
+            const table = document.createElement('table');
+            const tbody = document.createElement('tbody');
+
+            const headers = ["仕入先ID", "仕入先名", "仕入先住所", "電話番号", "資本金", "到着日数"];
+
+            // ヘッダー行を作成
+            const headerRow = document.createElement('tr');
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            tbody.appendChild(headerRow);
+
+            // データ行を作成
+            suppliers.forEach((supplier) => {
+                const row = document.createElement('tr');
+                const cell1 = document.createElement('td');
+                cell1.textContent = supplier.id;
+                row.appendChild(cell1);
+
+                const cell2 = document.createElement('td');
+                cell2.textContent = supplier.name;
+                row.appendChild(cell2);
+
+                const cell3 = document.createElement('td');
+                cell3.textContent = supplier.address;
+                row.appendChild(cell3);
+
+                const cell4 = document.createElement('td');
+                cell4.textContent = supplier.phone;
+                row.appendChild(cell4);
+
+                const cell5 = document.createElement('td');
+                cell5.textContent = supplier.capital;
+                row.appendChild(cell5);
+
+                const cell6 = document.createElement('td');
+                cell6.textContent = supplier.days;
+                row.appendChild(cell6);
+
+                tbody.appendChild(row);
+            });
+
+            table.appendChild(tbody);
+            tableContainer.appendChild(table);
+        }
+    </script>
+<p>[新規仕入先登録]</p>
+<form action="" method="" name=""></form>
+仕入先ID
+<br><input type="text" placeholder="仕入先IDを入力">
+<br>仕入先名
+<br><input type="text" placeholder="仕入先名を入力">
+<br>仕入先住所
+<br><input type="text" placeholder="仕入先住所を入力">
+<br>電話番号
+<br><input type="tel" placeholder="電話番号を入力">
+<br>資本金
+<br><input type="text" placeholder="資本金を入力">
+<br>到着日数
+<br><input type="text" placeholder="到着日数を入力">
+<p><input type="submit" value="登録"><input type="submit" value="変更"></p>
+</body>
+</html>
