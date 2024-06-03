@@ -18,11 +18,11 @@ def login(request):
         if employee.emppassed == emppasswd:
             request.session['empid'] = employee.empid
             if employee.emprole == 1:
-                return render(request,'admin_home.html')
+                return render(request,'admin/home.html')
             elif employee.emprole == 2:
-                return render(request,'reception_home.html')
+                return render(request,'reception/home.html')
             elif employee.emprole == 3:
-                return render(request,'doctor_home.html')
+                return render(request,'reception/home.html')
         else:
             messages.error(request, "パスワードが違います")
             return render(request, 'login.html')
@@ -46,10 +46,13 @@ def empregistration(request):
             )
             employee.save()
             messages.success(request, '従業員が登録されました。')
-            return redirect('')
+            return redirect('admin_empregistration.html')
 
+    return render(request, 'admin/empregistration.html')
 
-    return render(request, 'admin_registration.html', {'form': form})
+def vendor(request):
+    if request.method == "POST":
+
 
 
 def employee_success(request):
