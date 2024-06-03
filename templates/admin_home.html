@@ -11,10 +11,14 @@
 <p>-------------------------</p>
 <p>-------------------------</p>
 
-<br><input type="submit" value="従業員登録">
-<br><input type="submit" value="仕入先一覧">
-<br><input type="submit" value="レコード追加">
-<br><input type="submit" value="従業員氏名変更">
+<nav>
+    <ul>
+        <li><a href="{% url '#empregistration' %}">従業員登録</a></li>
+        <li><a href="{% url '#vendor' %}">仕入先一覧</a></li>
+        <li><a href="#">レコード追加</a></li>
+        <li><a href="{% url '#nachange' %}">従業員氏名変更</a></li>
+    </ul>
+</nav>
 
 </body>
 </html>

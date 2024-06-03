@@ -11,12 +11,16 @@
 <p>-------------------------</p>
 <p>-------------------------</p>
 
-<form action="" method="" name=""></form>
-利用者ID
-<br><input type="text" placeholder="利用者IDを入力"><br>
-パスワード
-<br><input type="password" placeholder="パスワードを入力">
-<br><input type="checkbox" name="keep" value="login">ログイン状態を保持
-<p><input type="submit" value="ログイン"></p>
+
+<form method="POST">
+    <label for="userID">利用者ID</label>
+    <br><input type="text" id="userID" name="userID" placeholder="利用者IDを入力"><br>
+
+    <label for="password">パスワード</label>
+    <br><input type="password" id="password" name="password" placeholder="パスワードを入力">
+    
+    <br><input type="checkbox" name="keep" value="login">ログイン状態を保持
+    <p><input type="submit" value="ログイン"></p>
+</form>
 </body>
 </html>
