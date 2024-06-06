@@ -14,22 +14,7 @@
 <form action="" method="get">
     <input type="search" name="search" placeholder="🔍住所検索">
 </form>
-
-<style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: center;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
-</head>
+  
     <h3>仕入先一覧表</h3>
     <button onclick="generateTable()">表示</button>
 
@@ -37,22 +22,17 @@
 
     <script>
         function generateTable() {
-            // ここで仮に3つの仕入先のデータを設定します
-            const suppliers = [
-                { id: "ID1", name: "Name1", address: "Address1", phone: "000-1111-1111", capital: "100000", days: "5" },
-                { id: "ID2", name: "Name2", address: "Address2", phone: "000-2222-2222", capital: "200000", days: "6" },
-                { id: "ID3", name: "Name3", address: "Address3", phone: "000-3333-3333", capital: "300000", days: "7" }
-            ];
+            const shiiregyosyas = JSON.parse(document.getElementById('shiiregyosyas-data').textContent);
 
             const tableContainer = document.getElementById('tableContainer');
-            tableContainer.innerHTML = ""; // 既存の表をクリア
+            tableContainer.innerHTML = ""; // Clear existing table
 
             const table = document.createElement('table');
             const tbody = document.createElement('tbody');
 
             const headers = ["仕入先ID", "仕入先名", "仕入先住所", "電話番号", "資本金", "納期"];
 
-            // ヘッダー行を作成
+            // Create header row
             const headerRow = document.createElement('tr');
             headers.forEach(header => {
                 const th = document.createElement('th');
@@ -61,31 +41,32 @@
             });
             tbody.appendChild(headerRow);
 
-            // データ行を作成
-            suppliers.forEach((supplier) => {
+            // Create data rows
+            shiiregyosyas.forEach((shiiregyosya) => {
                 const row = document.createElement('tr');
+
                 const cell1 = document.createElement('td');
-                cell1.textContent = supplier.id;
+                cell1.textContent = shiiregyosya.shiireid;
                 row.appendChild(cell1);
 
                 const cell2 = document.createElement('td');
-                cell2.textContent = supplier.name;
+                cell2.textContent = shiiregyosya.shiiremei;
                 row.appendChild(cell2);
 
                 const cell3 = document.createElement('td');
-                cell3.textContent = supplier.address;
+                cell3.textContent = shiiregyosya.shiireaddress;
                 row.appendChild(cell3);
 
                 const cell4 = document.createElement('td');
-                cell4.textContent = supplier.phone;
+                cell4.textContent = shiiregyosya.shiiretel;
                 row.appendChild(cell4);
 
                 const cell5 = document.createElement('td');
-                cell5.textContent = supplier.capital;
+                cell5.textContent = shiiregyosya.shihonkin;
                 row.appendChild(cell5);
 
                 const cell6 = document.createElement('td');
-                cell6.textContent = supplier.days;
+                cell6.textContent = shiiregyosya.nouki;
                 row.appendChild(cell6);
 
                 tbody.appendChild(row);
@@ -95,20 +76,23 @@
             tableContainer.appendChild(table);
         }
     </script>
+
 <p>[新規仕入先登録]</p>
-<form action="" method="" name=""></form>
-<label for="venid">仕入先ID</label>
-<br><input type="text" placeholder="仕入先IDを入力">
-<br>仕入先名
-<br><input type="text" placeholder="仕入先名を入力">
-<br>仕入先住所
-<br><input type="text" placeholder="仕入先住所を入力">
-<br>電話番号
-<br><input type="tel" placeholder="電話番号を入力">
-<br>資本金
-<br><input type="text" placeholder="資本金を入力">
-<br>納期
-<br><input type="text" placeholder="納期を入力">
-<p><input type="submit" value="登録"><input type="submit" value="変更"></p>
+<form method="POST">
+    <label for="shiireid">仕入先ID</label>
+    <br><input type="text" id="shiireid" name="shiireid" placeholder="仕入先IDを入力">
+    <label for="shiiremei">仕入先名</label>
+    <br><input type="text" id="shiiremei" name="shiiremei" placeholder="仕入先名を入力">
+    <label for="shiireaddress">仕入先住所</label>
+    <br><input type="text" id="shiireaddress" name="shiireaddress" placeholder="仕入先住所を入力">
+    <label for="shiiretel">電話番号</label>
+    <br><input type="tel" id="shiiretel" name="shiiretel" placeholder="電話番号を入力">
+    <label for="shihonkin">資本金</label>
+    <br><input type="text" id="shihonkin" name="shihonkin" placeholder="資本金を入力">
+    <label for="nouki">納期</label>
+    <br><input type="text" id="nouki" name="nouki" placeholder="納期を入力">
+    <p><input type="submit" value="登録"><input type="submit" value="変更"></p>
+</form>
+
 </body>
 </html>
