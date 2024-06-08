@@ -11,74 +11,41 @@
 <p>-------------------------</p>
 <p>-------------------------</p>
 
-<form action="" method="get">
-    <input type="search" name="search" placeholder="🔍住所検索">
+<form method="get">
+        <label for="address">🔍</label>
+        <input type="text" id="address" name="address" value="{{ address }}" placeholder="住所検索">
+        <button type="submit">検索</button>
 </form>
   
     <h3>仕入先一覧表</h3>
-    <button onclick="generateTable()">表示</button>
-
     <div id="tableContainer"></div>
 
-    <script>
-        function generateTable() {
-            const shiiregyosyas = JSON.parse(document.getElementById('shiiregyosyas-data').textContent);
-
-            const tableContainer = document.getElementById('tableContainer');
-            tableContainer.innerHTML = ""; // Clear existing table
-
-            const table = document.createElement('table');
-            const tbody = document.createElement('tbody');
-
-            const headers = ["仕入先ID", "仕入先名", "仕入先住所", "電話番号", "資本金", "納期"];
-
-            // Create header row
-            const headerRow = document.createElement('tr');
-            headers.forEach(header => {
-                const th = document.createElement('th');
-                th.textContent = header;
-                headerRow.appendChild(th);
-            });
-            tbody.appendChild(headerRow);
-
-            // Create data rows
-            shiiregyosyas.forEach((shiiregyosya) => {
-                const row = document.createElement('tr');
-
-                const cell1 = document.createElement('td');
-                cell1.textContent = shiiregyosya.shiireid;
-                row.appendChild(cell1);
-
-                const cell2 = document.createElement('td');
-                cell2.textContent = shiiregyosya.shiiremei;
-                row.appendChild(cell2);
-
-                const cell3 = document.createElement('td');
-                cell3.textContent = shiiregyosya.shiireaddress;
-                row.appendChild(cell3);
-
-                const cell4 = document.createElement('td');
-                cell4.textContent = shiiregyosya.shiiretel;
-                row.appendChild(cell4);
-
-                const cell5 = document.createElement('td');
-                cell5.textContent = shiiregyosya.shihonkin;
-                row.appendChild(cell5);
-
-                const cell6 = document.createElement('td');
-                cell6.textContent = shiiregyosya.nouki;
-                row.appendChild(cell6);
-
-                tbody.appendChild(row);
-            });
-
-            table.appendChild(tbody);
-            tableContainer.appendChild(table);
-        }
-    </script>
+    <table border="1">
+    <tr>
+        <th>ID</th>
+        <th>名前</th>
+        <th>住所</th>
+        <th>電話番号</th>
+        <th>資本金</th>
+        <th>納期</th>
+        <th></th>
+    </tr>
+    {% for shiiregyosya in shiiregyosyas %}
+        <tr>
+            <td>{{ shiiregyosya.shiireid }}</td>
+            <td>{{ shiiregyosya.shiiremei }}</td>
+            <td>{{ shiiregyosya.shiireaddress }}</td>
+            <td>{{ shiiregyosya.shiiretel }}</td>
+            <td>{{ shiiregyosya.shihonkin }}</td>
+            <td>{{ shiiregyosya.nouki }}</td>
+            <th><input type="submit" value="変更"></th>
+        </tr>
+    {% endfor %}
+    </table>
 
 <p>[新規仕入先登録]</p>
 <form method="POST">
+    {% csrf_token %}
     <label for="shiireid">仕入先ID</label>
     <br><input type="text" id="shiireid" name="shiireid" placeholder="仕入先IDを入力">
     <label for="shiiremei">仕入先名</label>
@@ -91,7 +58,7 @@
     <br><input type="text" id="shihonkin" name="shihonkin" placeholder="資本金を入力">
     <label for="nouki">納期</label>
     <br><input type="text" id="nouki" name="nouki" placeholder="納期を入力">
-    <p><input type="submit" value="登録"><input type="submit" value="変更"></p>
+    <p><input type="submit" value="登録"></p>
 </form>
 
 </body>

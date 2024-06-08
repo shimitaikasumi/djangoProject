@@ -13,11 +13,12 @@
 
 
 <form method="POST">
-    <label for="userID">利用者ID</label>
-    <br><input type="text" id="userID" name="userID" placeholder="利用者IDを入力"><br>
+    {% csrf_token %}
+    <label for="empid">利用者ID</label>
+    <br><input type="text" id="empid" name="empid" placeholder="利用者IDを入力"><br>
 
-    <label for="password">パスワード</label>
-    <br><input type="password" id="password" name="password" placeholder="パスワードを入力">
+    <label for="emppasswd">パスワード</label>
+    <br><input type="password" id="emppasswd" name="emppasswd" placeholder="パスワードを入力">
     
     <br><input type="checkbox" name="keep" value="login">ログイン状態を保持
     <p><input type="submit" value="ログイン"></p>
