@@ -99,6 +99,23 @@ def vendor_list(request):
         shiiregyosyas = Shiiregyosya.objects.all()
         return render(request, 'admin/vendor.html', {'shiiregyosyas': shiiregyosyas})
 
+def nachange_search(request):
+    if request.method == 'GET':
+        employee = Employee.objects.all()
+        return render(request, 'admin/nachange.html', {'employee': employee})
+    elif request.method == 'POST':
+        id = request.POST.get('empid')
+        if id:
+            employees = Employee.objects.filter(empid=id)
+        else:
+            employees = Employee.objects.none()
+
+        return render(request, 'admin/nachange.html', {'employees': employees})
+
+def nachange_list(request):
+    if request.method == 'GET':
+        employees = Employee.objects.all()
+        return render(request, 'admin/nachange.html', {'employees': employees})
 
 def shiire_success(request):
     return render(request, 'shiire_success.html')

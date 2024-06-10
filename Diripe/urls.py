@@ -8,4 +8,6 @@ urlpatterns = [
     path('vendor_list/', views.vendor_list, name='vendor_list'),
     path('vendor_search/', views.vendor_search, name='vendor_search'),
     path('empregistation/', views.empregistration, name='empregistation'),
+    path('nachange_list/', views.nachange_list, name='nachange_list'),
+    path('nachange_search/', views.nachange_search, name='nachange_search'),
 ]

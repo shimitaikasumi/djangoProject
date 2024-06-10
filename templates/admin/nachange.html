@@ -11,7 +11,35 @@
 <p>-------------------------</p>
 <p>-------------------------</p>
 
-<form action="" method="" name=""></form>
+<form method="post" action="{% url 'nachange_search' %}">
+    {% csrf_token %}
+        <label for="id">🔍</label>
+        <input type="text" id="id" name="empid" placeholder="ID検索">
+        <button type="submit">検索</button>
+</form>
+  
+    <h3>従業員一覧表</h3>
+    <div id="tableContainer"></div>
+
+    <table border="1">
+    <tr>
+        <th>利用者ID</th>
+        <th>名</th>
+        <th>姓</th>
+        <th>役職</th>
+
+    </tr>
+    {% for employee in employees %}
+        <tr>
+            <td>{{ employee.empid }}</td>
+            <td>{{ employee.empfname }}</td>
+            <td>{{ employee.emplname }}</td>
+            <td>{{ employee.emprole }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+
+\
 従業員ID
 <br><input type="search" placeholder="指名を変更する従業員のIDを入力">
 <p>現在の氏名</p>
