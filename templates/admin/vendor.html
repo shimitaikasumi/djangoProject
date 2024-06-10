@@ -11,9 +11,10 @@
 <p>-------------------------</p>
 <p>-------------------------</p>
 
-<form method="get">
+<form method="post" action="{% url 'vendor_search' %}">
+    {% csrf_token %}
         <label for="address">🔍</label>
-        <input type="text" id="address" name="address" value="{{ address }}" placeholder="住所検索">
+        <input type="text" id="address" name="shiireaddress" placeholder="住所検索">
         <button type="submit">検索</button>
 </form>
   
@@ -38,13 +39,12 @@
             <td>{{ shiiregyosya.shiiretel }}</td>
             <td>{{ shiiregyosya.shihonkin }}</td>
             <td>{{ shiiregyosya.nouki }}</td>
-            <th><input type="submit" value="変更"></th>
         </tr>
     {% endfor %}
     </table>
 
 <p>[新規仕入先登録]</p>
-<form method="POST">
+<form method="POST" action="{% url 'vendor_touroku' %}">
     {% csrf_token %}
     <label for="shiireid">仕入先ID</label>
     <br><input type="text" id="shiireid" name="shiireid" placeholder="仕入先IDを入力">

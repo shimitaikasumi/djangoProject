@@ -70,13 +70,12 @@ def vendor_toroku(request):
                                        ).exists():
             messages.error(request, 'この仕入先はすでに登録してあります。')
         else:
-            shiiregyosya = Shiiregyosya(
+            shiiregyosya = Shiiregyosya.objects.create(
                 shiireid=shiireid, shiiremei=shiiremei,
                 shiireaddress=shiireaddress, shiiretel=shiiretel,
                 shihonkin=shihonkin, nouki=nouki
             )
-            shiiregyosya.save()
-            return redirect('shiire_success')
+            return render(request,'shiire_success.html',{'shiiregyosya':shiiregyosya})
 
     return render(request, 'admin/vendor.html')
 
@@ -85,14 +84,14 @@ def vendor_search(request):
     if request.method == 'GET':
         shiiregyosya = Shiiregyosya.objects.all()
         return render(request, 'admin/vendor.html', {'shiiregyosya': shiiregyosya})
+    elif request.method == 'POST':
+        address = request.POST.get('shiireaddress')
+        if address:
+            shiiregyosyas = Shiiregyosya.objects.filter(shiireaddress__icontains=address)
+        else:
+            shiiregyosyas = Shiiregyosya.objects.none()
 
-    address = request.GET.get('address', '')
-    vendors = []
-
-    if address:
-        vendors = Shiiregyosya.objects.filter(shiireaddress__icontains=address)
-
-    return render(request, 'admin/vendor.html', {'address': address, 'vendors': vendors})
+        return render(request, 'admin/vendor.html', {'shiiregyosyas': shiiregyosyas})
 
 
 def vendor_list(request):
