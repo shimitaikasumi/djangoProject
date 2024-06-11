@@ -75,7 +75,7 @@ def vendor_toroku(request):
                 shiireaddress=shiireaddress, shiiretel=shiiretel,
                 shihonkin=shihonkin, nouki=nouki
             )
-            return render(request,'shiire_success.html',{'shiiregyosya':shiiregyosya})
+            return render(request, 'shiire_success.html', {'shiiregyosya': shiiregyosya})
 
     return render(request, 'admin/vendor.html')
 
@@ -99,6 +99,7 @@ def vendor_list(request):
         shiiregyosyas = Shiiregyosya.objects.all()
         return render(request, 'admin/vendor.html', {'shiiregyosyas': shiiregyosyas})
 
+
 def nachange_search(request):
     if request.method == 'GET':
         employee = Employee.objects.all()
@@ -112,13 +113,25 @@ def nachange_search(request):
 
         return render(request, 'admin/nachange.html', {'employees': employees})
 
+
 def nachange_list(request):
     if request.method == 'GET':
         employees = Employee.objects.all()
         return render(request, 'admin/nachange.html', {'employees': employees})
 
+
+def confirmation(request,empid):
+    if request.method == "GET":
+        employees = Employee.objects.get(empid=empid)
+        return render(request, 'admin/confirmation.html', {'employees': employees})
+
+    return render(request, 'admin/confirmation.html')
+
+
 def shiire_success(request):
     return render(request, 'shiire_success.html')
+
+
 def employee_success(request):
     return render(request, 'employee_success.html')
 

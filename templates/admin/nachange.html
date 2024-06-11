@@ -22,11 +22,13 @@
     <div id="tableContainer"></div>
 
     <table border="1">
+    {% csrf_token %}
     <tr>
         <th>利用者ID</th>
         <th>名</th>
         <th>姓</th>
         <th>役職</th>
+        <th></th>
 
     </tr>
     {% for employee in employees %}
@@ -35,16 +37,15 @@
             <td>{{ employee.empfname }}</td>
             <td>{{ employee.emplname }}</td>
             <td>{{ employee.emprole }}</td>
+            <td>
+                <form method="GET" action="{% url 'confirmation' employee.empid %}">
+                    <button type="submit">変更</button>
+                </form>
+            </td>
         </tr>
     {% endfor %}
     </table>
 
-\
-従業員ID
-<br><input type="search" placeholder="指名を変更する従業員のIDを入力">
-<p>現在の氏名</p>
-<br>変更後氏名
-<br><input type="text" placeholder="変更する氏名を入力">
-<p><input type="submit" value="確定"></p>
+
 </body>
 </html>
