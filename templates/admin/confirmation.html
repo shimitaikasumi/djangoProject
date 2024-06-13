@@ -12,22 +12,22 @@
 <p>-------------------------</p>
 
 <form method="POST">
-{% csrf_token %}
-    <h4>変更内容確認</h4>
-    <div id="tableContainer"></div>
+    {% csrf_token %}
+        <h3>変更内容確認</h3>
+        
+        {{ employee.empid }}
+        <h4>現在の従業員氏名</h4>
+        {{ employee.emplname }} {{ employee.empfname }}
+        
+        <p>
+            <label for="newemplname">変更後の姓</label>
+            <input type="text" id="newemplname" name="newemplname" placeholder="変更後の姓を入力">
+            <label for="newempfname">変更後の名</label>
+            <input type="text" id="newempfname" name="newempfname" placeholder="変更後の名を入力">
+            <br><h7>確定しますか？</h7>
+            <input type="submit" value="確定">
+        </p>
     
-    <table border="1">
-        <tr>
-            <th>現在の従業員氏名</th>
-        </tr>
-        {% for employee in Employees %}
-            <tr>
-                <td>{{ employee.emplname }}</td>
-                <td>{{ employee.empfname }}</td>
-            </tr>
-        {% endfor %}
-    </table>
-    <input type 
 </form>
 
 </body>

@@ -38,7 +38,8 @@
             <td>{{ employee.emplname }}</td>
             <td>{{ employee.emprole }}</td>
             <td>
-                <form method="GET" action="{% url 'confirmation' employee.empid %}">
+                <form method="post" action="{% url 'confirmation' employee.empid %}">
+                    {% csrf_token %}
                     <button type="submit">変更</button>
                 </form>
             </td>

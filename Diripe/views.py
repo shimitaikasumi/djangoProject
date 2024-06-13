@@ -87,11 +87,11 @@ def vendor_search(request):
     elif request.method == 'POST':
         address = request.POST.get('shiireaddress')
         if address:
-            shiiregyosyas = Shiiregyosya.objects.filter(shiireaddress__icontains=address)
+            shiiregyosya = Shiiregyosya.objects.filter(shiireaddress__icontains=address)
         else:
-            shiiregyosyas = Shiiregyosya.objects.none()
+            shiiregyosya = Shiiregyosya.objects.none()
 
-        return render(request, 'admin/vendor.html', {'shiiregyosyas': shiiregyosyas})
+        return render(request, 'admin/vendor.html', {'shiiregyosya': shiiregyosya})
 
 
 def vendor_list(request):
@@ -102,8 +102,8 @@ def vendor_list(request):
 
 def nachange_search(request):
     if request.method == 'GET':
-        employee = Employee.objects.all()
-        return render(request, 'admin/nachange.html', {'employee': employee})
+        employees = Employee.objects.all()
+        return render(request, 'admin/nachange.html', {'employees': employees})
     elif request.method == 'POST':
         id = request.POST.get('empid')
         if id:
@@ -120,10 +120,29 @@ def nachange_list(request):
         return render(request, 'admin/nachange.html', {'employees': employees})
 
 
-def confirmation(request,empid):
-    if request.method == "GET":
-        employees = Employee.objects.get(empid=empid)
-        return render(request, 'admin/confirmation.html', {'employees': employees})
+def confirmation(request, empid):
+    employee = Employee.objects.get(empid=empid)
+
+    if request.method == 'GET':
+        employee = Employee.objects.filter(empid=empid)
+        return render(request, 'admin/confirmation.html', {'employee': employee})
+
+    if request.method == 'POST':
+        new_emplname = request.POST.get('newemplname')
+        new_empfname = request.POST.get('newempfname')
+
+        # 入力が空かどうかをチェック
+        if not new_emplname or not new_empfname:
+            messages.error(request, '姓と名を入力してください。')
+            return render(request, 'admin/confirmation.html', {'employee': employee})
+
+        # フォームが有効な場合、データベースを更新
+        employee.emplname = new_emplname
+        employee.empfname = new_empfname
+        employee.save()
+
+        messages.success(request, '従業員情報が更新されました。')
+        return redirect('admin/nachange.html', {'employee': employee})# 成功時のリダイレクト先を指定
 
     return render(request, 'admin/confirmation.html')
 

@@ -12,22 +12,23 @@
 <p>-------------------------</p>
 
 <form method="POST">
-    <label for="empid">利用者ID</label>
-    <br><input type="text" id="empid" name="empid" placeholder="利用者IDを入力"><br>
-    
-    <label for="emplname">姓</label>
-    <br><input type="text" id="emplname" name="emplname" placeholder="姓を入力">
-    
-    <label for="empfname">名</label>
-    <br><input type="text" id="empfname" name="empfname" placeholder="名を入力">
-    
-    <label for="emppasswd">パスワード</label>
-    <br><input type="password" id="emppasswd" name="emppasswd" placeholder="パスワードを入力">
-    
-    <label for="emprole">役職</label>
-    <br><input type="number" id="emprole" name="emprole" placeholder="役職ナンパーを入力">
-    
-    <p><input type="submit" value="登録"></p>
+    {% csrf_token %}
+        <label for="empid">利用者ID</label>
+        <br><input type="text" id="empid" name="empid" placeholder="利用者IDを入力"><br>
+        
+        <label for="emplname">姓</label>
+        <br><input type="text" id="emplname" name="emplname" placeholder="姓を入力">
+        
+        <label for="empfname">名</label>
+        <br><input type="text" id="empfname" name="empfname" placeholder="名を入力">
+        
+        <label for="emppasswd">パスワード</label>
+        <br><input type="password" id="emppasswd" name="emppasswd" placeholder="パスワードを入力">
+        
+        <label for="emprole">役職</label>
+        <br><input type="number" id="emprole" name="emprole" placeholder="役職ナンパーを入力">
+        
+        <p><input type="submit" value="登録"></p>
 </form>
 
 </body>
