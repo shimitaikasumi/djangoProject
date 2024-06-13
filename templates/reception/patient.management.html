@@ -10,9 +10,43 @@
 <p>-------------------------</p>
 <p>-------------------------</p>
 
-患者ID
-<br><input type="search" placeholder="患者IDを入力"><br>
-<br>現在の保険証情報
-<br>
+<form method="post" action="{% url 'patient_list' %}">
+    {% csrf_token %}
+        <label for="id">🔍</label>
+        <input type="text" id="id" name="empid" placeholder="ID検索">
+        <button type="submit">検索</button>
+</form>
+    <h3>患者一覧表</h3>
+    <div id="tableContainer"></div>
+
+    <table border="1">
+    {% csrf_token %}
+    <tr>
+        <th>患者ID</th>
+        <th>名</th>
+        <th>姓</th>
+        <th>保険証情報</th>
+        <th>有効期限</th>
+        <th></th>
+
+    </tr>
+    {% for patient in patients %}
+        <tr>
+            <td>{{ patient.patid }}</td>
+            <td>{{ patient.patfname }}</td>
+            <td>{{ patient.patlname }}</td>
+            <td>{{ patient.hokenmei }}</td>
+            <td>{{ patient.hokenexp }}</td>
+            <td>
+                <form method="post" action="{% url 'confirmation_pat' patient.patid %}">
+                    {% csrf_token %}
+                    <button type="submit">変更</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+
+
 </body>
 </html>

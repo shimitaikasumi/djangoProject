@@ -16,4 +16,8 @@ urlpatterns = [
     path('employeeinfchg_search/', views.employeeinfchg_search, name='employeeinfchg_search'),
     path('confirmation_re/', views.confirmation_re, name='confirmation_re'),
     path('confirmation_re/<int:empid>', views.confirmation_re, name='confirmation_re'),
+    path('patient_registration/', views.patient_registration, name='patient_registration'),
+    path('patient_list/', views.patient_list, name='patient_list'),
+    path('confirmation_pat/', views.confirmation_pat, name='confirmation_pat'),
+    path('confirmation_pat/<int:patid>', views.confirmation_pat, name='confirmation_pat'),
 ]

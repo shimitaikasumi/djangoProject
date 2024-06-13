@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .models import Employee, Shiiregyosya
+from .models import Employee, Shiiregyosya, Patient
 
 
 def login(request):
@@ -195,7 +195,63 @@ def confirmation_re(request, empid):
 
     return render(request, 'reception/confirmation_re.html')
 
+def patient_registration(request):
+    if request.method == 'GET':
+        patient = Patient.objects.all()
+        return render(request, 'reception/patient.registration.html', {'patient': patient})
 
+    if request.method == 'POST':
+        patid = request.POST.get('patid')
+        patfname = request.POST.get('patfname')
+        patlname = request.POST.get('patlname')
+        hokenmei = request.POST.get('hokenmei')
+        hokenexp = request.POST.get('hokenexp')
+
+        if Patient.objects.filter(patid=patid).exists():
+            messages.error(request, 'このIDはすでに登録してあります。')
+        else:
+            patient = Patient(
+                patid=patid, patfname=patfname,
+                patlname=patlname, hokenmei=hokenmei,
+                hokenexp=hokenexp
+            )
+            patient.save()
+            messages.success(request, '患者が登録されました。')
+            return redirect('reception/patient.registration.html')
+
+    return render(request, 'reception/patient.registration.html')
+
+def patient_list(request):
+    if request.method == 'GET':
+        patients = Patient.objects.all()
+        return render(request, 'reception/patient.management.html', {'patients': patients})
+
+
+def confirmation_pat(request, patid):
+    patient = Patient.objects.get(patid=patid)
+
+    if request.method == 'GET':
+        patient = Patient.objects.filter(patid=patid)
+        return render(request, 'reception/confirmation_pat.html', {'patient': patient})
+
+    if request.method == 'POST':
+        new_hokenmei = request.POST.get('newhokenmei')
+        new_hokenexp = request.POST.get('newhokenexp')
+
+        # 入力が空かどうかをチェック
+        if not new_hokenmei or not new_hokenexp:
+            messages.error(request, '変更する保険証情報を入力してください。')
+            return render(request, 'reception/confirmation_pat.html', {'patient': patient})
+
+        # フォームが有効な場合、データベースを更新
+        patient.hokenmei = new_hokenmei
+        patient.hokenexp = new_hokenexp
+        patient.save()
+
+        messages.success(request, '患者の保険証情報が更新されました。')
+        return redirect('reception/patient.management.html', {'patient': patient})# 成功時のリダイレクト先を指定
+
+    return render(request, 'reception/confirmation_pat.html')
 
 
 def shiire_success(request):
