@@ -12,4 +12,8 @@ urlpatterns = [
     path('nachange_search/', views.nachange_search, name='nachange_search'),
     path('confirmation/', views.confirmation, name='confirmation'),
     path('confirmation/<int:empid>', views.confirmation, name='confirmation'),
+    path('employeeinfchg_list/', views.employeeinfchg_list, name='employeeinfchg_list'),
+    path('employeeinfchg_search/', views.employeeinfchg_search, name='employeeinfchg_search'),
+    path('confirmation_re/', views.confirmation_re, name='confirmation_re'),
+    path('confirmation_re/<int:empid>', views.confirmation_re, name='confirmation_re'),
 ]

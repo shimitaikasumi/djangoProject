@@ -146,6 +146,57 @@ def confirmation(request, empid):
 
     return render(request, 'admin/confirmation.html')
 
+def employeeinfchg_search(request):
+    if request.method == 'GET':
+        employees = Employee.objects.all()
+        return render(request, 'reception/employeeinfchg.html', {'employees': employees})
+    elif request.method == 'POST':
+        id = request.POST.get('empid')
+        if id:
+            employees = Employee.objects.filter(empid=id)
+        else:
+            employees = Employee.objects.none()
+
+        return render(request, 'reception/employeeinfchg.html', {'employees': employees})
+
+
+def employeeinfchg_list(request):
+    if request.method == 'GET':
+        employees = Employee.objects.all()
+        return render(request, 'reception/employeeinfchg.html', {'employees': employees})
+
+
+def confirmation_re(request, empid):
+    employee = Employee.objects.get(empid=empid)
+
+    if request.method == 'GET':
+        employee = Employee.objects.filter(empid=empid)
+        return render(request, 'reception/confirmation_re.html', {'employee': employee})
+
+    if request.method == 'POST':
+        new_emppass_r = request.POST.get('newemppass_r')
+        new_emppass_e = request.POST.get('newemppass_e')
+
+        # 入力が空かどうかをチェック
+        if not new_emppass_r or not new_emppass_e:
+            messages.error(request, '変更するパスワードを入力してください。')
+            return render(request, 'reception/confirmation_re.html', {'employee': employee})
+
+        if not new_emppass_r == new_emppass_e:
+            messages.error(request, '入力したパスワードが一致しません。')
+            return render(request, 'reception/confirmation_re.html', {'employee': employee})
+
+        # フォームが有効な場合、データベースを更新
+        employee.emppasswd = new_emppass_r
+        employee.save()
+
+        messages.success(request, '従業員情報が更新されました。')
+        return redirect('reception/employeeinfchg.html', {'employee': employee})# 成功時のリダイレクト先を指定
+
+    return render(request, 'reception/confirmation_re.html')
+
+
+
 
 def shiire_success(request):
     return render(request, 'shiire_success.html')

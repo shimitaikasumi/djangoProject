@@ -11,10 +11,14 @@
 <p>-------------------------</p>
 <p>-------------------------</p>
 
-<br><input type="submit" value="従業員情報変更機能">
-<br><input type="submit" value="患者登録機能">
-<br><input type="submit" value="患者管理">
-<br><input type="submit" value="患者検索">
+<nav>
+    <ul>
+        <li><a href="{% url 'employeeinfchg_list' %}">従業員情報変更</a></li>
+        <li><a href="#">患者登録</a></li>
+        <li><a href="#">患者管理</a></li>
+        <li><a href="#">患者検索</a></li>
+    </ul>
+</nav>
 
 </body>
 </html>

@@ -11,14 +11,42 @@
 <p>-------------------------</p>
 <p>-------------------------</p>
 
-従業員ID
-<br><input type="search" placeholder="従業員ID">
-<br>現在のパスワード
-<br><input type="password" placeholder="現在のパスワードを入力"><br>
-<br>新しいパスワード
-<br><input type="password" placeholder="変更後のパスワード">
-<br>新パスワード確認
-<br><input type="password" placeholder="変更後パスワード再入力">
-<p><input type="submit" value="確定"></p>
+<form method="post" action="{% url 'employeeinfchg_search' %}">
+    {% csrf_token %}
+        <label for="id">🔍</label>
+        <input type="text" id="id" name="empid" placeholder="ID検索">
+        <button type="submit">検索</button>
+</form>
+  
+    <h3>従業員一覧表</h3>
+    <div id="tableContainer"></div>
+
+    <table border="1">
+    {% csrf_token %}
+    <tr>
+        <th>利用者ID</th>
+        <th>名</th>
+        <th>姓</th>
+        <th>役職</th>
+        <th></th>
+
+    </tr>
+    {% for employee in employees %}
+        <tr>
+            <td>{{ employee.empid }}</td>
+            <td>{{ employee.empfname }}</td>
+            <td>{{ employee.emplname }}</td>
+            <td>{{ employee.emprole }}</td>
+            <td>
+                <form method="post" action="{% url 'confirmation_re' employee.empid %}">
+                    {% csrf_token %}
+                    <button type="submit">変更</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+
+
 </body>
 </html>
