@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -252,6 +254,15 @@ def confirmation_pat(request, patid):
         return redirect('reception/patient.management.html', {'patient': patient})# 成功時のリダイレクト先を指定
 
     return render(request, 'reception/confirmation_pat.html')
+
+def patient_expired(request):
+    # 現在のUTC日付を取得
+    today = timezone.now().date()
+    # 有効期限を過ぎた患者をフィルタリング
+    patients = Patient.objects.filter(hokenexp__lt=today)
+    # 結果をテンプレートに渡して表示
+    return render(request, 'reception/patient.search.html', {'patients': patients})
+
 
 
 def shiire_success(request):

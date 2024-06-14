@@ -10,9 +10,28 @@
 <p>-------------------------</p>
 <p>-------------------------</p>
 
-患者名
-<br><input type="search" placeholder="患者名を入力"><br>
-<br>患者情報
+    <h3>保険証期限切れ患者一覧</h3>
+    <div id="tableContainer"></div>
+
+    <table border="1">
+        {% csrf_token %}
+        <tr>
+            <th>患者ID</th>
+            <th>姓</th>
+            <th>名</th>
+            <th>保険証情報</th>
+            <th>有効期限</th>
+        </tr>
+        {% for patient in patients %}
+        <tr>
+            <td>{{ patient.patid }}</td>
+            <td>{{ patient.patlname }}</td>
+            <td>{{ patient.patfname }}</td>
+            <td>{{ patient.hokenmei }}</td>
+            <td>{{ patient.hokenexp }}</td>
+        </tr>
+        {% endfor %}
+    </table>
 
 
 </body>

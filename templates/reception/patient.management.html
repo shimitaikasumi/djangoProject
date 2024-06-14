@@ -10,12 +10,6 @@
 <p>-------------------------</p>
 <p>-------------------------</p>
 
-<form method="post" action="{% url 'patient_list' %}">
-    {% csrf_token %}
-        <label for="id">🔍</label>
-        <input type="text" id="id" name="empid" placeholder="ID検索">
-        <button type="submit">検索</button>
-</form>
     <h3>患者一覧表</h3>
     <div id="tableContainer"></div>
 

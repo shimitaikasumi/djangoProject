@@ -20,4 +20,5 @@ urlpatterns = [
     path('patient_list/', views.patient_list, name='patient_list'),
     path('confirmation_pat/', views.confirmation_pat, name='confirmation_pat'),
     path('confirmation_pat/<int:patid>', views.confirmation_pat, name='confirmation_pat'),
+    path('patient_expired/', views.patient_expired, name='patient_expired'),
 ]
