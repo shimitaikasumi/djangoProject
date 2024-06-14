@@ -223,7 +223,7 @@ def patient_registration(request):
 
     return render(request, 'reception/patient.registration.html')
 
-def patient_list(request):
+def patient_listr(request):
     if request.method == 'GET':
         patients = Patient.objects.all()
         return render(request, 'reception/patient.management.html', {'patients': patients})
@@ -262,6 +262,24 @@ def patient_expired(request):
     patients = Patient.objects.filter(hokenexp__lt=today)
     # 結果をテンプレートに渡して表示
     return render(request, 'reception/patient.search.html', {'patients': patients})
+
+def patient_listd(request):
+    if request.method == 'GET':
+        patients = Patient.objects.all()
+        return render(request, 'doctor/patient.search.html', {'patients': patients})
+
+def patient_search(request):
+    if request.method == 'GET':
+        patients = Patient.objects.all()
+        return render(request, 'doctor/patient.search.html', {'patients': patients})
+    elif request.method == 'POST':
+        lname = request.POST.get('patlname')
+        if lname:
+            patients = Patient.objects.filter(patlname=lname)
+        else:
+            patients = Patient.objects.none()
+
+        return render(request, 'doctor/patient.search.html', {'patients': patients})
 
 
 
