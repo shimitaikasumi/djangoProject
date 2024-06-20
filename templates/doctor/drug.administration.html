@@ -10,12 +10,57 @@
 <p>-------------------------</p>
 <p>-------------------------</p>
 
-患者名
-<br><input type="search" placeholder="患者名"><br>
-<br>薬剤
-<br><input type="search" placeholder="薬剤を検索する"><br>
+<form method="POST">
+    {% csrf_token %}
+        <h3>薬剤投与選択</h3>
+        <div id="tableContainer"></div>
 
+        <h4>患者名</h4> 
+        {{ patient.patlname }} {{ patient.patfname }}
 
-
+        <table border="1">
+           {% csrf_token %}
+           <tr>
+                <th>薬剤名</th>
+                <th>数量</th>
+                <th></th>
+            </tr>
+            {% for medicine in medicines %}
+            <tr>
+                <td>{{ medicine.medicinename }}</td>
+                <td>{{ prescription.quantity }}</td>
+                <td><input type="number" name="num" value="1">/td>
+                <td>
+                    <form method="post" action="#">
+                        {% csrf_token %}
+                        <button type="submit">削除</button>
+                        <input type="hidden" name="patid">
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <table border="1">
+            {% csrf_token %}
+            <tr>
+                <th>薬剤名</th>
+                <th>処方数</th>
+                <th></th>
+            </tr>
+            {% for medicine in medicines %}
+            <tr>
+                <td>{{ medicine.medicinename }}</td>
+                <td><input type="number" name="num" value="1">/td>
+                <td>
+                    <form method="post" action="#">
+                        {% csrf_token %}
+                        <button type="submit">追加</button>
+                        <input type="hidden" name="patid">
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </form>
 </body>
 </html>

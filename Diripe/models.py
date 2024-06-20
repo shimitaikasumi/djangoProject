@@ -27,3 +27,10 @@ class Medicine(models.Model):
     medicineid = models.CharField(max_length=8, primary_key=True)
     medicinename = models.CharField(max_length=64)
     unit = models.CharField(max_length=8)
+
+class Treatment(models.Model):
+    patid = models.CharField(max_length=64)
+    medicineid = models.ForeignKey(Medicine, on_delete=models.CASCADE, related_name='treatments')
+    quantity = models.IntegerField()
+    impdate = models.DateField()
+

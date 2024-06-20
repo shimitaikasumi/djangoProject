@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .models import Employee, Shiiregyosya, Patient
+from .models import Employee, Shiiregyosya, Patient, Medicine, Treatment
 
 
 def login(request):
@@ -144,9 +144,10 @@ def confirmation(request, empid):
         employee.save()
 
         messages.success(request, '従業員情報が更新されました。')
-        return redirect('admin/nachange.html', {'employee': employee})# 成功時のリダイレクト先を指定
+        return redirect('admin/nachange.html', {'employee': employee})  # 成功時のリダイレクト先を指定
 
     return render(request, 'admin/confirmation.html')
+
 
 def employeeinfchg_search(request):
     if request.method == 'GET':
@@ -193,9 +194,10 @@ def confirmation_re(request, empid):
         employee.save()
 
         messages.success(request, '従業員情報が更新されました。')
-        return redirect('reception/employeeinfchg.html', {'employee': employee})# 成功時のリダイレクト先を指定
+        return redirect('reception/employeeinfchg.html', {'employee': employee})  # 成功時のリダイレクト先を指定
 
     return render(request, 'reception/confirmation_re.html')
+
 
 def patient_registration(request):
     if request.method == 'GET':
@@ -222,6 +224,7 @@ def patient_registration(request):
             return redirect('reception/patient.registration.html')
 
     return render(request, 'reception/patient.registration.html')
+
 
 def patient_listr(request):
     if request.method == 'GET':
@@ -251,7 +254,7 @@ def confirmation_pat(request, patid):
         patient.save()
 
         messages.success(request, '患者の保険証情報が更新されました。')
-        return redirect('reception/patient.management.html', {'patient': patient})# 成功時のリダイレクト先を指定
+        return redirect('reception/patient.management.html', {'patient': patient})  # 成功時のリダイレクト先を指定
 
     return render(request, 'reception/confirmation_pat.html')
 
@@ -281,7 +284,109 @@ def patient_search(request):
 
         return render(request, 'doctor/patient.search.html', {'patients': patients})
 
+def drug_selection(request, patid):
+    patient = Patient.objects.get(patid=patid)
+    medecines = Medicine.objects.all()
+    treatment = request.session.get(f'treatment_{patid}', [])
 
+    if request.method == 'POST':
+        patient = Patient.objects.filter(patid=patid)
+        return render(request, 'doctor/drug.administration.html', {'patient': patient, 'medecines': medecines})
+
+    treatment = []
+    for index, pres in enumerate(treatment):
+        medicine = Medicine.objects.filter(patient=patient, medicine=pres)
+        treatment.append({
+            'index': index,
+            'medicine_name': medicine.medicinename,
+            'num': pres['num']
+        })
+
+    return redirect(request, 'doctor/patient.search.html', {'patient': patient})
+
+def delete_drug(request, patid):
+    patient = Patient.objects.get(patid=patid)
+    treatments = Treatment.objects.filter(patient=patient)
+    medicines = Medicine.objects.filter(patient=patient)
+
+    if request.method == 'POST':
+        medicineid = request.POST.get('medicineid')
+        num = int(request.POST.get('num'))
+        treatment = request.POST.get('treatment')
+
+        if treatment.quantity > 0:
+            treatment.quantity -= num
+
+        if treatment.quantity <= 0:
+            treatment.delete()
+
+        return redirect('treatent_list', {patient.patid: patid})
+
+    return redirect(request, 'doctor/drug.administration.html', {'patient': patient}, {'medicines': medicines})
+
+def add_drug(request, patid):
+    medicine_id = request.POST.get('medicineid')
+    num = int(request.POST.get('num'))
+
+    try:
+        num = int(num)
+    except ValueError:
+        return redirect('error_page')
+
+    treatments = request.session.get(f'treatment_{patid}', [])
+
+    found = False
+    for pres in treatments:
+        if pres['medicine'] == medicine_id:
+            pres['num'] += num
+            found = True
+            break
+
+    if not found:
+        treatments.append({
+            'medicine': medicine_id,
+            'num': num
+        })
+
+    request.session[f'treatment_{patid}'] = treatments
+    return redirect('treatment_list', {patid: patid})
+def error_page(request):
+    return render(request, 'error_page.html')
+
+def confirmation_drug(request, patid):
+    patient = Patient.objects.get(patid=patid)
+
+    if request.method == 'GET':
+        medicines = Medicine.objects.all()
+        return render(request, 'doctor/drug.administration.html', {'medicines': medicines})
+
+
+
+def confirmation_pat(request, patid):
+    patient = Patient.objects.get(patid=patid)
+
+    if request.method == 'GET':
+        patient = Patient.objects.filter(patid=patid)
+        return render(request, 'reception/confirmation_pat.html', {'patient': patient})
+
+    if request.method == 'POST':
+        new_hokenmei = request.POST.get('newhokenmei')
+        new_hokenexp = request.POST.get('newhokenexp')
+
+        # 入力が空かどうかをチェック
+        if not new_hokenmei or not new_hokenexp:
+            messages.error(request, '変更する保険証情報を入力してください。')
+            return render(request, 'reception/confirmation_pat.html', {'patient': patient})
+
+        # フォームが有効な場合、データベースを更新
+        patient.hokenmei = new_hokenmei
+        patient.hokenexp = new_hokenexp
+        patient.save()
+
+        messages.success(request, '患者の保険証情報が更新されました。')
+        return redirect('reception/patient.management.html', {'patient': patient})  # 成功時のリダイレクト先を指定
+
+    return render(request, 'reception/confirmation_pat.html')
 
 def shiire_success(request):
     return render(request, 'shiire_success.html')

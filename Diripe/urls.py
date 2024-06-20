@@ -23,4 +23,8 @@ urlpatterns = [
     path('patient_expired/', views.patient_expired, name='patient_expired'),
     path('patient_search/', views.patient_search, name='patient_search'),
     path('patient_listd/', views.patient_listd, name='patient_listd'),
+    path('add_drug/<str:patid>/', views.add_drug, name='add_drug'),
+    path('delete_drug/<str:patid>/', views.delete_drug, name='delete_drug'),
+    path('error_page/', views.error_page, name='error_page'),
+    path('drug_selection<str:patid>/', views.drug_selection, name='drug_selection'),
 ]

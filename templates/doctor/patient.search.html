@@ -27,6 +27,7 @@
             <th>名</th>
             <th>保険証情報</th>
             <th>有効期限</th>
+            <th>薬剤情報</th>
         </tr>
         {% for patient in patients %}
         <tr>
@@ -35,6 +36,12 @@
             <td>{{ patient.patfname }}</td>
             <td>{{ patient.hokenmei }}</td>
             <td>{{ patient.hokenexp }}</td>
+            <td>
+                <form method="post" action="{% url 'drug_selection' patient.patid %}">
+                    {% csrf_token %}
+                    <button type="submit">選択</button>
+                </form>
+            </td>
         </tr>
         {% endfor %}
     </table>
