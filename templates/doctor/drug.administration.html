@@ -10,57 +10,59 @@
 <p>-------------------------</p>
 <p>-------------------------</p>
 
-<form method="POST">
+{% csrf_token %}
+<h3>薬剤投与選択</h3>
+<div id="tableContainer"></div>
+
+<h4>患者名　　{{ patient.patlname }}　{{ patient.patfname }}</h4>
+<p>前回処方の薬剤</p>
+
+<!-- 処方中の薬剤を表示するテーブル -->
+<table border="1">
     {% csrf_token %}
-        <h3>薬剤投与選択</h3>
-        <div id="tableContainer"></div>
+    <tr>
+        <th>薬剤名</th>
+        <th>数量</th>
+    </tr>
+    {% for treatment in treatments %}
+    <tr>
+        <td>{{ treatment.medicine_name }}</td>
+        <td>{{ treatment.quantity }}</td>
+        <td>
+            <form method="POST" action="{% url 'delete_drug' patid treatment.id %}">
+                {% csrf_token %}
+                <input type="number" name="quantity" value="1">
+                <button type="submit">削除</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
 
-        <h4>患者名</h4> 
-        {{ patient.patlname }} {{ patient.patfname }}
+<p>処方薬剤</p>
 
-        <table border="1">
-           {% csrf_token %}
-           <tr>
-                <th>薬剤名</th>
-                <th>数量</th>
-                <th></th>
-            </tr>
-            {% for medicine in medicines %}
-            <tr>
-                <td>{{ medicine.medicinename }}</td>
-                <td>{{ prescription.quantity }}</td>
-                <td><input type="number" name="num" value="1">/td>
-                <td>
-                    <form method="post" action="#">
-                        {% csrf_token %}
-                        <button type="submit">削除</button>
-                        <input type="hidden" name="patid">
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
-        <table border="1">
-            {% csrf_token %}
-            <tr>
-                <th>薬剤名</th>
-                <th>処方数</th>
-                <th></th>
-            </tr>
-            {% for medicine in medicines %}
-            <tr>
-                <td>{{ medicine.medicinename }}</td>
-                <td><input type="number" name="num" value="1">/td>
-                <td>
-                    <form method="post" action="#">
-                        {% csrf_token %}
-                        <button type="submit">追加</button>
-                        <input type="hidden" name="patid">
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
-    </form>
+<!-- 追加可能な薬剤を表示するテーブル -->
+<table border="1">
+    {% csrf_token %}
+    <tr>
+        <th>薬剤名</th>
+        <th>処方数</th>
+        <th></th>
+    </tr>
+    {% for medicine in medicines %}
+    <tr>
+        <td>{{ medicine.medicinename }}</td>
+        <td>
+            <form method="POST" action="{% url 'add_drug' patid medicine.medicineid %}">
+                {% csrf_token %}
+                <input type="number" name="quantity" value="0" min="0">
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+    <button type="submit">追加</button>
+</table>
+<a href="{% url 'patient_search' %}">患者一覧へ戻る</a>
+
 </body>
 </html>
