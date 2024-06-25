@@ -1,3 +1,5 @@
+from datetime import timezone
+
 from django.db import models
 
 
@@ -29,8 +31,9 @@ class Medicine(models.Model):
     unit = models.CharField(max_length=8)
 
 class Treatment(models.Model):
-    patid = models.CharField(max_length=64)
-    medicineid = models.ForeignKey(Medicine, on_delete=models.CASCADE, related_name='treatments')
+    treatment_id = models.AutoField(primary_key=True)
+    empid = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    patid = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    medicineid = models.ForeignKey(Medicine, on_delete=models.CASCADE)
     quantity = models.IntegerField()
-    impdate = models.DateField()
-
+    date = models.DateTimeField(auto_now_add=True)

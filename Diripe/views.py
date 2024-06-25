@@ -1,8 +1,8 @@
-from django.utils import timezone
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.utils import timezone
+
 from .models import Employee, Shiiregyosya, Patient, Medicine, Treatment
 
 
@@ -283,29 +283,12 @@ def patient_search(request):
 
 
 def drug_selection(request, patid):
-    # 患者情報を取得
-    patient = Patient.objects.get(patid=patid)
-    # 全ての薬剤情報を取得
+    print(patid)
     medicines = Medicine.objects.all()
+    treatments = Treatment.objects.all()
+    print(treatments)
+    patient = Patient.objects.get(patid=patid)
 
-    # セッションから治療情報を取得
-    session_treatment = request.session.get(f'treatment_{patid}', [])
-
-    # treatments リストを作成
-    treatments = []
-    for index, pres in enumerate(session_treatment):
-        # 各薬剤情報を取得
-        medicine = Medicine.objects.get(medicineid=pres['medicine_id'])
-        treatment = Treatment.objects.get(id=pres['id'])  # 修正箇所
-        # treatments リストに追加
-        treatments.append({
-            'index': index,
-            'medicine_name': medicine.medicinename,
-            'quantity': treatment.quantity,  # 修正箇所
-            'id': treatment.id  # 修正箇所
-        })
-
-    # テンプレートにデータを渡してレンダリング
     return render(request, 'doctor/drug.administration.html', {
         'patient': patient,
         'medicines': medicines,
