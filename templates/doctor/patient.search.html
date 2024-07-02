@@ -37,8 +37,9 @@
             <td>{{ patient.hokenmei }}</td>
             <td>{{ patient.hokenexp }}</td>
             <td>
-                <form method="post" action="{% url 'drug_selection' patient.patid %}">
+                <form method="post" action="{% url 'drug_selection' %}">
                     {% csrf_token %}
+                    <input type="hidden" name="patid" value="{{ patient.patid }}">
                     <button type="submit">選択</button>
                 </form>
             </td>

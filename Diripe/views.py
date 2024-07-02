@@ -282,11 +282,10 @@ def patient_search(request):
         return render(request, 'doctor/patient.search.html', {'patients': patients})
 
 
-def drug_selection(request, patid):
-    print(patid)
+def drug_selection(request):
+    patid = request.POST['patid']
     medicines = Medicine.objects.all()
     treatments = Treatment.objects.all()
-    print(treatments)
     patient = Patient.objects.get(patid=patid)
 
     return render(request, 'doctor/drug.administration.html', {
@@ -297,41 +296,56 @@ def drug_selection(request, patid):
     })
 
 
-def delete_drug(request, patid, treatment_id):
+def add_drug(request, patid):
+    medicines = Medicine.objects.all()
     patient = Patient.objects.get(patid=patid)
-    treatment = Treatment.objects.get(id=treatment_id)
 
     if request.method == 'POST':
-        quantity = int(request.POST.get('quantity'))
-        treatment.quantity -= quantity
+        patid = request.POST.get('patid')
 
-        if treatment.quantity <= 0:
-            treatment.delete()
-        else:
-            treatment.save()
+        cart = request.session['cartlist']
 
-        return redirect('drug_selection', patid=patid)
+        quantity1 = request.POST.get('quantity1')
+        cart_drug = {
+            'patid': patid,
+            'quantity': quantity1,
+            'medicinename': medicines.medicinename,
+            'date': timezone.date,
+        }
+        cart.append(cart_drug)
+
+        quantity2 = request.POST.get('quantity2')
+        cart_drug = {
+            'patid': patid,
+            'quantity': quantity2,
+            'medicinename': medicines.medicinename,
+            'date': timezone.date,
+        }
+        cart.append(cart_drug)
+
+        quantity3 = request.POST.get('quantity3')
+        cart_drug = {
+            'patid': patid,
+            'quantity': quantity3,
+            'medicinename': medicines.medicinename,
+            'date': timezone.date,
+        }
+        cart.append(cart_drug)
+
+        request.session['cartlist'] = cart
+
+        return redirect('cartlist_view')
 
     medicines = Medicine.objects.all()
-    return render(request, 'doctor/drug.administration.html', {'patient': patient, 'medicines': medicines})
+    return render(request, 'doctor/cart_drug.html', {'patient': patient, 'medicines': medicines})
 
 
-def add_drug(request, patid, treatment_id):
-    patient = Patient.objects.get(patid=patid)
-    medicine = Medicine.objects.get(id=treatment_id)
-
-    if request.method == 'POST':
-        quantity = int(request.POST.get('quantity'))
-
-        treatment, created = Treatment.objects.get_or_create(patient=patient, medicine=medicine)
-        treatment.quantity += quantity
-        treatment.save()
-
-        return redirect('drug_selection', patid=patid)
-
-    medicines = Medicine.objects.all()
-    return render(request, 'doctor/drug.administration.html', {'patient': patient, 'medicines': medicines})
-
+def cartlist_view(request):
+    cart = request.session.get('cartlist', [])
+    for index, item in enumerate(cart):
+        item['cart_id'] = index
+    request.session['cartlist'] = cart
+    return render(request, 'doctor/cart_drug.html', {'cart': cart})
 
 def error_page(request):
     return render(request, 'error_page.html')

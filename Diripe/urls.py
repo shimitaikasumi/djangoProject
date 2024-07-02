@@ -22,8 +22,8 @@ urlpatterns = [
     path('confirmation_pat/<int:patid>', views.confirmation_pat, name='confirmation_pat'),
     path('patient_expired/', views.patient_expired, name='patient_expired'),
     path('patient_search/', views.patient_search, name='patient_search'),
-    path('add_drug/<str:patid>/<int:treatment_id>/', views.add_drug, name='add_drug'),
-    path('delete_drug/<str:patid>/<int:treatment_id>/', views.delete_drug, name='delete_drug'),
+    path('add_drug/<str:patid>', views.add_drug, name='add_drug'),
     path('error_page/', views.error_page, name='error_page'),
-    path('drug_selection/<str:patid>/', views.drug_selection, name='drug_selection'),
+    path('drug_selection/', views.drug_selection, name='drug_selection'),
+    path('cartlist_view/', views.cartlist_view, name='cartlist_view'),
 ]
