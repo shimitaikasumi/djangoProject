@@ -3,6 +3,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.utils import timezone
 
+from django.core.serializers.json import DjangoJSONEncoder
+from django.http import JsonResponse
+
 from .models import Employee, Shiiregyosya, Patient, Medicine, Treatment
 
 
@@ -302,50 +305,26 @@ def add_drug(request, patid):
 
     if request.method == 'POST':
         patid = request.POST.get('patid')
-
         cart = request.session['cartlist']
 
-        quantity1 = request.POST.get('quantity1')
-        cart_drug = {
-            'patid': patid,
-            'quantity': quantity1,
-            'medicinename': medicines.medicinename,
-            'date': timezone.date,
-        }
-        cart.append(cart_drug)
-
-        quantity2 = request.POST.get('quantity2')
-        cart_drug = {
-            'patid': patid,
-            'quantity': quantity2,
-            'medicinename': medicines.medicinename,
-            'date': timezone.date,
-        }
-        cart.append(cart_drug)
-
-        quantity3 = request.POST.get('quantity3')
-        cart_drug = {
-            'patid': patid,
-            'quantity': quantity3,
-            'medicinename': medicines.medicinename,
-            'date': timezone.date,
-        }
-        cart.append(cart_drug)
+        for medicine in range(medicines.count()):
+            cart_drug = {
+                'patid': patid,
+                'quantity': request.POST.get(f'quantity{medicine}'),
+                'medicinename': medicines[medicine].medicinename,
+                'date': timezone.now().isoformat(),
+            }
+            cart.append(cart_drug)
 
         request.session['cartlist'] = cart
-
         return redirect('cartlist_view')
 
-    medicines = Medicine.objects.all()
     return render(request, 'doctor/cart_drug.html', {'patient': patient, 'medicines': medicines})
 
 
 def cartlist_view(request):
     cart = request.session.get('cartlist', [])
-    for index, item in enumerate(cart):
-        item['cart_id'] = index
-    request.session['cartlist'] = cart
-    return render(request, 'doctor/cart_drug.html', {'cart': cart})
+    return render(request, '', {'cart': cart})
 
 def error_page(request):
     return render(request, 'error_page.html')
