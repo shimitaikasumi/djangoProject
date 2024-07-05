@@ -25,5 +25,7 @@ urlpatterns = [
     path('add_drug/<str:patid>', views.add_drug, name='add_drug'),
     path('error_page/', views.error_page, name='error_page'),
     path('drug_selection/', views.drug_selection, name='drug_selection'),
-    path('cartlist_view/', views.cartlist_view, name='cartlist_view'),
+    path('Treatment_confirmed/', views.Treatment_confirmed, name='Treatment_confirmed'),
+    path('patient_pasthistory/', views.patient_pasthistory, name='patient_pasthistory'),
+    path('deletion_drug/', views.deletion_drug, name='deletion_drug'),
 ]

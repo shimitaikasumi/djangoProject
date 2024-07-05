@@ -1,3 +1,5 @@
+from itertools import count
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -302,29 +304,75 @@ def drug_selection(request):
 def add_drug(request, patid):
     medicines = Medicine.objects.all()
     patient = Patient.objects.get(patid=patid)
+    cart = request.session['cartlist']
 
     if request.method == 'POST':
         patid = request.POST.get('patid')
-        cart = request.session['cartlist']
 
         for medicine in range(medicines.count()):
             cart_drug = {
+                'empid': request.session['empid'],
                 'patid': patid,
-                'quantity': request.POST.get(f'quantity{medicine}'),
+                'quantity': request.POST.get(f'quantity{medicine+1}'),
                 'medicinename': medicines[medicine].medicinename,
                 'date': timezone.now().isoformat(),
             }
             cart.append(cart_drug)
 
         request.session['cartlist'] = cart
-        return redirect('cartlist_view')
-
-    return render(request, 'doctor/cart_drug.html', {'patient': patient, 'medicines': medicines})
+    return render(request, 'doctor/cart_drug.html', {'patient': patient, 'medicines': medicines, 'cart': cart})
 
 
-def cartlist_view(request):
-    cart = request.session.get('cartlist', [])
-    return render(request, '', {'cart': cart})
+def deletion_drug(request):
+    medicines = Medicine.objects.all()
+    patient = Patient.objects.get(patid=request.POST['patid'])
+    count = 1
+    cart = request.session['cartlist']
+
+    if request.method == 'POST':
+        patid = request.POST.get('patid')
+        index = request.POST.get('index')
+        for ca in range(cart.count()):
+            if count == index:
+                cart_drug = {
+                    'empid': request.session['empid'],
+                    'patid': patid,
+                    'quantity': request.POST.get(f'quantity{ca + 1}'),
+                    'medicinename': medicines[ca].medicinename,
+                    'date': timezone.now().isoformat(),
+                }
+                cart.delete(cart_drug)
+            else:
+                count = count + 1
+
+        request.session['cartlist'] = cart
+    return render(request, 'doctor/cart_drug.html', {'patient': patient, 'medicines': medicines, 'cart': cart})
+
+
+def Treatment_confirmed(request, patid):
+    patient = Patient.objects.get(patid=patid)
+    cart = request.session['cartlist']
+    treatments = Treatment.objects.all()
+    medicines = Medicine.objects.all()
+
+    for aa in cart:
+        Treatment(
+            empid=aa['name'],
+            patid=aa['patid'],
+            quantity=aa['quantity'],
+            medicinename=aa['medicinename'],
+            date=aa['date'],
+        )
+        Treatment.save()
+        messages.success(request, '患者への薬剤処置が確定されました。')
+
+    return redirect(request, 'doctor/drug.administration.html', {'patient': patient, 'treatments': treatments, 'medicines': medicines})
+
+
+def patient_pasthistory(request, patid):
+    patient = Patient.objects.get(patid=patid)
+    treatments = Treatment.objects.all()
+
 
 def error_page(request):
     return render(request, 'error_page.html')

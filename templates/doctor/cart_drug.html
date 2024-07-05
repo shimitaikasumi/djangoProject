@@ -22,21 +22,31 @@
     <tr>
         <th>薬剤名</th>
         <th>数量</th>
+        <th></th>
     </tr>
-    {% for treatment in treatments %}
+    {% for c in cart %}
     <tr>
-        <td>{{ treatment.medicineid.medicinename }}</td>
-        <td>{{ treatment.quantity }}</td>
+        <td>{{ c.medicinename }}</td>
+        <td>{{ c.quantity }}</td>
+        <td>
+            <form method="POST" action="{% url 'deletion_drug' %}">
+                {% csrf_token %}
+                <input type="hidden" name="index{{ forloop.counter }}">
+                <input type="hidden" name="patid" value="{{ patient.patid }}">
+                <input type="hidden" name="quantity" value="{{ c.quantity }}">
+                <button type="submit">削除</button>
+            </form>
+        </td>
     </tr>
     {% endfor %}
 </table>
 <br>
 <br>
-<form method="POST" action="#">
+<form method="POST" action="{% url 'Treatment_confirmed' %}">
     {% csrf_token %}
-    <input type="hidden" name="patid" value="{{ patid }}">
-    <input type="hidden" name="quantity" value="{{ treatment.quantity }}">
-    <buttonn type="submit">処置確定</buttonn>
+    <input type="hidden" name="patid" value="{{ patient.patid }}">
+    <input type="hidden" name="quantity" value="{{ c.quantity }}">
+    <button type="submit">処置確定</button>
 </form>
 <a href="{% url 'patient_search' %}">患者一覧へ戻る</a>
 <a href="{% url 'drug_selection' %}">薬剤選択画面に戻る</a>

@@ -38,6 +38,6 @@ class Treatment(models.Model):
     treatment_id = models.AutoField(primary_key=True)
     empid = models.ForeignKey(Employee, on_delete=models.CASCADE)
     patid = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    medicineid = models.ForeignKey(Medicine, on_delete=models.CASCADE)
+    medicinename = models.CharField(max_length=64)
     quantity = models.IntegerField()
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateField()
