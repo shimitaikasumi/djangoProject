@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Diripemiiser</title>
+</head>
+<body>
+<h4>ログイン中：　　ログアウト</h4>
+<p>医師 ー 患者検索</p>
+<p>-------------------------</p>
+<p>-------------------------</p>
+
+<form method="post" action="{% url 'patient_search' %}">
+    {% csrf_token %}
+        <label for="patlname">🔍</label>
+        <input type="text" id="patlname" name="patlname" placeholder="患者姓検索">
+        <button type="submit">検索</button>
+</form>
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+<table border="1">
+    <tr>
+        <th>患者名</th>
+        <th></th>
+    </tr>
+    {% for pa in patient %}
+        <tr>
+            <td>{{ pa.patlname }}{{ pa.patfname }}</td>
+            <td>
+                <form method="POST" action="{% url 'patient_pasthistory' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="patid" value="{{ patient.patid }}">
+                    <button type="submit">処置履歴</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+    
+    
+</body>
+</html>

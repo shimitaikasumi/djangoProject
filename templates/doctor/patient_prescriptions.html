@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Diripemiiser</title>
+</head>
+<body>
+<h4>ログイン中：　　ログアウト</h4>
+<p>医師 ー 処置履歴</p>
+<p>-------------------------</p>
+<p>-------------------------</p>
+
+{% csrf_token %}
+<h3>処方薬剤確定</h3>
+<div id="tableContainer"></div>
+
+<h4>患者名　　{{ patient.patlname }}　{{ patient.patfname }}　の処置履歴</h4>
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+<table border="1">
+    {% csrf_token %}
+    <tr>
+        <th>薬剤名</th>
+        <th>数量</th>
+        <th>処方日</th>
+    </tr>
+    {% for tre in treatment %}
+    <tr>
+        <td>{{ treatment.medicinename }}</td>
+        <td>{{ treatment.quantity }}</td>
+        <td>{{ treatment.created_at|date:"Y-m-d" }}</td>
+    </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

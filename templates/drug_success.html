@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Diripemiiser</title>
+</head>
+<body>
+    <h2>患者への薬剤処置が確定されました。</h2>
+<a href="{% url 'patient_search' %}">患者一覧へ戻る</a>
+</body>
+</html>
+
+def deletion_drug(request):
+    medicines = Medicine.objects.all()
+    patient = Patient.objects.get(patid=request.POST['patid'])
+    cart = request.session['cartlist']
+
+    if request.method == 'POST':
+        index = request.POST.get('index')
+        cart.pop(int(index)-1)
+
+        request.session['cartlist'] = cart
+    return render(request, 'doctor/cart_drug.html', {'patient': patient, 'medicines': medicines, 'cart': cart})

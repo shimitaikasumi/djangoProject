@@ -1,3 +1,4 @@
+from datetime import datetime
 from itertools import count
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -127,11 +128,11 @@ def nachange_list(request):
         return render(request, 'admin/nachange.html', {'employees': employees})
 
 
-def confirmation(request, empid):
-    employee = Employee.objects.get(empid=empid)
+def confirmation(request):
+    employee = Employee.objects.get(empid=request.POST.get('empid'))
 
     if request.method == 'GET':
-        employee = Employee.objects.filter(empid=empid)
+        employee = Employee.objects.filter(empid=request.POST.get('empid'))
         return render(request, 'admin/confirmation.html', {'employee': employee})
 
     if request.method == 'POST':
@@ -149,9 +150,9 @@ def confirmation(request, empid):
         employee.save()
 
         messages.success(request, '従業員情報が更新されました。')
-        return redirect('admin/nachange.html', {'employee': employee})  # 成功時のリダイレクト先を指定
+        return render(request,'toroku.success.html', {'employee': employee})  # 成功時のリダイレクト先を指定
 
-    return render(request, 'admin/confirmation.html')
+    return render(request, 'admin/confirmation.html', {'employee': employee})
 
 
 def employeeinfchg_search(request):
@@ -174,11 +175,11 @@ def employeeinfchg_list(request):
         return render(request, 'reception/employeeinfchg.html', {'employees': employees})
 
 
-def confirmation_re(request, empid):
-    employee = Employee.objects.get(empid=empid)
+def confirmation_re(request):
+    employee = Employee.objects.get(empid=request.POST.get('empid'))
 
     if request.method == 'GET':
-        employee = Employee.objects.filter(empid=empid)
+        employee = Employee.objects.filter(empid=request.POST.get('empid'))
         return render(request, 'reception/confirmation_re.html', {'employee': employee})
 
     if request.method == 'POST':
@@ -199,9 +200,9 @@ def confirmation_re(request, empid):
         employee.save()
 
         messages.success(request, '従業員情報が更新されました。')
-        return redirect('reception/employeeinfchg.html', {'employee': employee})  # 成功時のリダイレクト先を指定
+        return render(request,'toroku.success.html', {'employee': employee})  # 成功時のリダイレクト先を指定
 
-    return render(request, 'reception/confirmation_re.html')
+    return render(request, 'reception/confirmation_re.html', {'employee': employee})
 
 
 def patient_registration(request):
@@ -226,7 +227,7 @@ def patient_registration(request):
             )
             patient.save()
             messages.success(request, '患者が登録されました。')
-            return redirect('reception/patient.registration.html')
+            return render(request, 'toroku.success.html')
 
     return render(request, 'reception/patient.registration.html')
 
@@ -237,11 +238,11 @@ def patient_listr(request):
         return render(request, 'reception/patient.management.html', {'patients': patients})
 
 
-def confirmation_pat(request, patid):
-    patient = Patient.objects.get(patid=patid)
+def confirmation_pat(request):
+    patient = Patient.objects.get(patid=request.POST.get('patid'))
 
     if request.method == 'GET':
-        patient = Patient.objects.filter(patid=patid)
+        patient = Patient.objects.filter(patid=request.POST.get('patid'))
         return render(request, 'reception/confirmation_pat.html', {'patient': patient})
 
     if request.method == 'POST':
@@ -259,9 +260,9 @@ def confirmation_pat(request, patid):
         patient.save()
 
         messages.success(request, '患者の保険証情報が更新されました。')
-        return redirect('reception/patient.management.html', {'patient': patient})  # 成功時のリダイレクト先を指定
+        return render(request, 'toroku.success.html', {'patient': patient})  # 成功時のリダイレクト先を指定
 
-    return render(request, 'reception/confirmation_pat.html')
+    return render(request, 'reception/confirmation_pat.html', {'patient': patient})
 
 
 def patient_expired(request):
@@ -274,6 +275,8 @@ def patient_expired(request):
 
 
 def patient_search(request):
+    if 'cartlist' in request.session:
+        del request.session['cartlist']
     if request.method == 'GET':
         patients = Patient.objects.all()
         return render(request, 'doctor/patient.search.html', {'patients': patients})
@@ -287,24 +290,36 @@ def patient_search(request):
         return render(request, 'doctor/patient.search.html', {'patients': patients})
 
 
+def patient_search2(request):
+    patient = Patient.objects.get(patid=request.POST.get('patid'))
+    patlname = request.GET.get('patlname')
+    if patlname:
+        patients = Patient.objects.filter(patid=patlname)
+        if not patients:
+            messages.error(request, '該当する患者が見つかりませんでした')
+    else:
+        patient = Patient.objects.all()
+    return render(request, 'doctor/patient.search2.html', {'patient': patient, 'patlname': patlname})
+
+
 def drug_selection(request):
-    patid = request.POST['patid']
     medicines = Medicine.objects.all()
     treatments = Treatment.objects.all()
-    patient = Patient.objects.get(patid=patid)
-
+    patient = Patient.objects.get(patid=request.POST['patid'])
     return render(request, 'doctor/drug.administration.html', {
         'patient': patient,
         'medicines': medicines,
         'treatments': treatments,
-        'patid': patid
     })
 
 
-def add_drug(request, patid):
+def add_drug(request):
     medicines = Medicine.objects.all()
-    patient = Patient.objects.get(patid=patid)
-    cart = request.session['cartlist']
+    patient = Patient.objects.get(patid=request.POST['patid'])
+    if 'cartlist' in request.session:
+        cart = request.session['cartlist']
+    else:
+        cart = []
 
     if request.method == 'POST':
         patid = request.POST.get('patid')
@@ -313,7 +328,7 @@ def add_drug(request, patid):
             cart_drug = {
                 'empid': request.session['empid'],
                 'patid': patid,
-                'quantity': request.POST.get(f'quantity{medicine+1}'),
+                'quantity': request.POST.get(f'quantity{medicine + 1}'),
                 'medicinename': medicines[medicine].medicinename,
                 'date': timezone.now().isoformat(),
             }
@@ -326,52 +341,54 @@ def add_drug(request, patid):
 def deletion_drug(request):
     medicines = Medicine.objects.all()
     patient = Patient.objects.get(patid=request.POST['patid'])
-    count = 1
     cart = request.session['cartlist']
 
     if request.method == 'POST':
-        patid = request.POST.get('patid')
         index = request.POST.get('index')
-        for ca in range(cart.count()):
-            if count == index:
-                cart_drug = {
-                    'empid': request.session['empid'],
-                    'patid': patid,
-                    'quantity': request.POST.get(f'quantity{ca + 1}'),
-                    'medicinename': medicines[ca].medicinename,
-                    'date': timezone.now().isoformat(),
-                }
-                cart.delete(cart_drug)
-            else:
-                count = count + 1
+        cart.pop(int(index)-1)
 
         request.session['cartlist'] = cart
     return render(request, 'doctor/cart_drug.html', {'patient': patient, 'medicines': medicines, 'cart': cart})
 
 
-def Treatment_confirmed(request, patid):
-    patient = Patient.objects.get(patid=patid)
+def treatment_confirmed(request):
     cart = request.session['cartlist']
-    treatments = Treatment.objects.all()
     medicines = Medicine.objects.all()
 
     for aa in cart:
-        Treatment(
-            empid=aa['name'],
-            patid=aa['patid'],
+        # 患者インスタンスを取得する
+        patid = aa['patid']
+        patient = Patient.objects.get(patid=patid)
+
+        # 従業員インスタンスを取得する
+        empid = aa['empid']
+        employee = Employee.objects.get(empid=empid)
+
+        date_obj = datetime.fromisoformat(aa['date'])
+
+        # Treatmentインスタンスを作成して保存する
+        treatment = Treatment(
+            empid=employee,
+            patid=patient,
             quantity=aa['quantity'],
             medicinename=aa['medicinename'],
-            date=aa['date'],
+            date=date_obj,
         )
-        Treatment.save()
+        treatment.save()
         messages.success(request, '患者への薬剤処置が確定されました。')
+        del request.session['cartlist']
 
-    return redirect(request, 'doctor/drug.administration.html', {'patient': patient, 'treatments': treatments, 'medicines': medicines})
+    # リダイレクトする場合、redirect()を正しく使用する
+    return render(request,'drug_success.html')
 
 
 def patient_pasthistory(request, patid):
-    patient = Patient.objects.get(patid=patid)
-    treatments = Treatment.objects.all()
+    patient = get_object_or_404(Patient, patid=patid)
+
+    treatments = Treatment.objects.filter(patient=patient).select_related('medicine')
+    if not treatments:
+        messages.error(request, 'この患者は処置されていません')
+    return render(request, 'doctor/patient_pasthistory.html', {'patient': patient, 'treatments': treatments})
 
 
 def error_page(request):

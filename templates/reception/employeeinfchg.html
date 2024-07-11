@@ -34,12 +34,13 @@
     {% for employee in employees %}
         <tr>
             <td>{{ employee.empid }}</td>
-            <td>{{ employee.empfname }}</td>
             <td>{{ employee.emplname }}</td>
+            <td>{{ employee.empfname }}</td>
             <td>{{ employee.emprole }}</td>
             <td>
-                <form method="post" action="{% url 'confirmation_re' employee.empid %}">
+                <form method="post" action="{% url 'confirmation_re' %}">
                     {% csrf_token %}
+                    <input type="hidden" name="empid" value="{{ employee.empid }}">
                     <button type="submit">変更</button>
                 </form>
             </td>

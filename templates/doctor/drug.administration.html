@@ -15,25 +15,6 @@
 <div id="tableContainer"></div>
 
 <h4>患者名　　{{ patient.patlname }}　{{ patient.patfname }}</h4>
-<p>前回処方の薬剤</p>
-
-<!-- 処方中の薬剤を表示するテーブル -->
-<table border="1">
-    {% csrf_token %}
-    <tr>
-        <th>薬剤名</th>
-        <th>数量</th>
-    </tr>
-    {% for treatment in treatments %}
-        <tr>
-            <td>{{ treatment.medicinename }}</td>
-            <td>{{ treatment.quantity }}</td>
-        </tr>
-    {% endfor %}
-</table>
-<br>
-<a href="{% url 'patient_pasthistory' %}">過去の処置履歴を見る</a>
-<br>
 <br>
 <br>
 <p>処方薬剤</p>
@@ -46,7 +27,7 @@
         <th>処方数</th>
         <th></th>
     </tr>
-    <form method="POST" action="{% url 'add_drug' patid %}">
+    <form method="POST" action="{% url 'add_drug' %}">
         {% csrf_token %}
         {% for medicine in medicines %}
             <tr>
@@ -56,7 +37,7 @@
                 </td>
             </tr>
         {% endfor %}
-        <input type="hidden" name="patid" value="{{ patid }}">
+        <input type="hidden" name="patid" value="{{ patient.patid }}">
         <button type="submit">追加</button>
     </form>
 </table>

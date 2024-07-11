@@ -31,7 +31,7 @@
         <td>
             <form method="POST" action="{% url 'deletion_drug' %}">
                 {% csrf_token %}
-                <input type="hidden" name="index{{ forloop.counter }}">
+                <input type="hidden" name="index" value="{{ forloop.counter }}">
                 <input type="hidden" name="patid" value="{{ patient.patid }}">
                 <input type="hidden" name="quantity" value="{{ c.quantity }}">
                 <button type="submit">削除</button>
@@ -42,14 +42,18 @@
 </table>
 <br>
 <br>
-<form method="POST" action="{% url 'Treatment_confirmed' %}">
+<form method="POST" action="{% url 'treatment_confirmed' %}">
     {% csrf_token %}
     <input type="hidden" name="patid" value="{{ patient.patid }}">
     <input type="hidden" name="quantity" value="{{ c.quantity }}">
     <button type="submit">処置確定</button>
 </form>
 <a href="{% url 'patient_search' %}">患者一覧へ戻る</a>
-<a href="{% url 'drug_selection' %}">薬剤選択画面に戻る</a>
+<form method="POST" name="form" action="{% url 'drug_selection' %}">
+    {% csrf_token %}
+    <input type="hidden" name="patid" value="{{ patient.patid }}">
+    <a href="javascript:form.submit()">薬剤選択画面に戻る</a>
+</form>
 
 </body>
 </html>
