@@ -10,11 +10,12 @@
 <p>-------------------------</p>
 <p>-------------------------</p>
 
-<form method="post" action="{% url 'patient_search' %}">
+<form method="POST" action="{% url 'patient_search2' %}">
     {% csrf_token %}
-        <label for="patlname">🔍</label>
-        <input type="text" id="patlname" name="patlname" placeholder="患者姓検索">
+        <label for="patid">🔍</label>
+        <input type="text" id="patid" name="patid" placeholder="患者ID検索">
         <button type="submit">検索</button>
+        <input type="hidden" name="patid" value="{{ treatment.patid_id }}">
 </form>
 {% if messages %}
     {% for message in messages %}
@@ -23,21 +24,24 @@
 {% endif %}
 <table border="1">
     <tr>
-        <th>患者名</th>
-        <th></th>
+        <th>処置日</th>
+        <th>患者ID</th>
+{#        <th>薬剤ID</th>#}
+        <th>薬剤名</th>
+        <th>投与量</th>
+{#        <th>単位</th>#}
     </tr>
-    {% for pa in patient %}
+    {% for t in treatment %}
         <tr>
-            <td>{{ pa.patlname }}{{ pa.patfname }}</td>
-            <td>
-                <form method="POST" action="{% url 'patient_pasthistory' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="patid" value="{{ patient.patid }}">
-                    <button type="submit">処置履歴</button>
-                </form>
-            </td>
+            <td>{{ t.date|date:"y-m-d" }}</td>
+            <td>{{ t.patid.patlname }}{{ t.patid.patfname }}</td>
+{#            <td>{{ t.medicineid.medicineid }}</td>#}
+            <td>{{ t.medicinename }}</td>
+            <td>{{ t.quantity }}</td>
+{#            <td>{{ t.unit }}</td>#}
         </tr>
     {% endfor %}
+
 </table>
     
     

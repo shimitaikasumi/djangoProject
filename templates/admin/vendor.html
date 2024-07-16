@@ -43,23 +43,5 @@
     {% endfor %}
     </table>
 
-<p>[新規仕入先登録]</p>
-<form method="POST" action="{% url 'vendor_toroku' %}">
-    {% csrf_token %}
-    <label for="shiireid">仕入先ID</label>
-    <br><input type="text" id="shiireid" name="shiireid" placeholder="仕入先IDを入力">
-    <label for="shiiremei">仕入先名</label>
-    <br><input type="text" id="shiiremei" name="shiiremei" placeholder="仕入先名を入力">
-    <label for="shiireaddress">仕入先住所</label>
-    <br><input type="text" id="shiireaddress" name="shiireaddress" placeholder="仕入先住所を入力">
-    <label for="shiiretel">電話番号</label>
-    <br><input type="tel" id="shiiretel" name="shiiretel" placeholder="電話番号を入力">
-    <label for="shihonkin">資本金</label>
-    <br><input type="text" id="shihonkin" name="shihonkin" placeholder="資本金を入力">
-    <label for="nouki">納期</label>
-    <br><input type="text" id="nouki" name="nouki" placeholder="納期を入力">
-    <p><input type="submit" value="登録"></p>
-</form>
-
 </body>
 </html>

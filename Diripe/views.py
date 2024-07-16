@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from itertools import count
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -85,7 +85,7 @@ def vendor_toroku(request):
             )
             return render(request, 'shiire_success.html', {'shiiregyosya': shiiregyosya})
 
-    return render(request, 'admin/vendor.html')
+    return render(request, 'admin/record_pras.html')
 
 
 def vendor_search(request):
@@ -205,6 +205,17 @@ def confirmation_re(request):
     return render(request, 'reception/confirmation_re.html', {'employee': employee})
 
 
+def string_to_date(date_string: str) -> date:
+    try:
+        # 日付文字列をdatetime部ジェクトに
+        date_obj = datetime.strptime(date_string, '%Y-%m-%d')
+        # datetimeオブジェクトをdateオブジェクトに変換
+        return date_obj.date()
+    except ValueError:
+        # 日付文字列のフォーマットが不正な場合
+        raise ValueError("Incorrect date format, should be YYYY-MM-DD")
+
+
 def patient_registration(request):
     if request.method == 'GET':
         patient = Patient.objects.all()
@@ -217,9 +228,20 @@ def patient_registration(request):
         hokenmei = request.POST.get('hokenmei')
         hokenexp = request.POST.get('hokenexp')
 
+        # 日付文字列をdateオブジェクトに変換
+        try:
+            hokenexp = string_to_date(hokenexp)
+        except ValueError as e:
+            messages.error(request, str(e))
+            return render(request, 'reception/patient.registration.html')
+        # 現在のUTC日付を取得
+        today = timezone.now().date()
+
+        print(today)
+
         if Patient.objects.filter(patid=patid).exists():
             messages.error(request, 'このIDはすでに登録してあります。')
-        else:
+        elif hokenexp >= today:
             patient = Patient(
                 patid=patid, patfname=patfname,
                 patlname=patlname, hokenmei=hokenmei,
@@ -228,6 +250,9 @@ def patient_registration(request):
             patient.save()
             messages.success(request, '患者が登録されました。')
             return render(request, 'toroku.success.html')
+        else:
+            messages.error(request,'有効期限が過ぎています。')
+            return render(request,'reception/patient.registration.html')
 
     return render(request, 'reception/patient.registration.html')
 
@@ -290,18 +315,6 @@ def patient_search(request):
         return render(request, 'doctor/patient.search.html', {'patients': patients})
 
 
-def patient_search2(request):
-    patient = Patient.objects.get(patid=request.POST.get('patid'))
-    patlname = request.GET.get('patlname')
-    if patlname:
-        patients = Patient.objects.filter(patid=patlname)
-        if not patients:
-            messages.error(request, '該当する患者が見つかりませんでした')
-    else:
-        patient = Patient.objects.all()
-    return render(request, 'doctor/patient.search2.html', {'patient': patient, 'patlname': patlname})
-
-
 def drug_selection(request):
     medicines = Medicine.objects.all()
     treatments = Treatment.objects.all()
@@ -352,34 +365,43 @@ def deletion_drug(request):
 
 
 def treatment_confirmed(request):
-    cart = request.session['cartlist']
-    medicines = Medicine.objects.all()
+    if 'cartlist' in request.session:
+        cart = request.session['cartlist']
+        medicines = Medicine.objects.all()
 
-    for aa in cart:
-        # 患者インスタンスを取得する
-        patid = aa['patid']
-        patient = Patient.objects.get(patid=patid)
+        for aa in cart:
+            # 患者インスタンスを取得する
+            patid = aa['patid']
+            patient = Patient.objects.get(patid=patid)
 
-        # 従業員インスタンスを取得する
-        empid = aa['empid']
-        employee = Employee.objects.get(empid=empid)
+            # 従業員インスタンスを取得する
+            empid = aa['empid']
+            employee = Employee.objects.get(empid=empid)
 
-        date_obj = datetime.fromisoformat(aa['date'])
+            date_obj = datetime.fromisoformat(aa['date'])
 
-        # Treatmentインスタンスを作成して保存する
-        treatment = Treatment(
-            empid=employee,
-            patid=patient,
-            quantity=aa['quantity'],
-            medicinename=aa['medicinename'],
-            date=date_obj,
-        )
-        treatment.save()
-        messages.success(request, '患者への薬剤処置が確定されました。')
+            # Treatmentインスタンスを作成して保存する
+            treatment = Treatment(
+                empid=employee,
+                patid=patient,
+                quantity=aa['quantity'],
+                medicinename=aa['medicinename'],
+                date=date_obj,
+            )
+            treatment.save()
+            messages.success(request, '患者への薬剤処置が確定されました。')
+
+        # cartlistが存在する場合にのみ削除
         del request.session['cartlist']
+    else:
+        messages.error(request, 'カート情報が見つかりませんでした。')
 
-    # リダイレクトする場合、redirect()を正しく使用する
-    return render(request,'drug_success.html')
+    # 処置が成功または失敗した場合のリダイレクト先
+    return render(request, 'drug_success.html')
+
+
+def patient_search2(request):
+    return render(request, 'doctor/patient.search2.html', {'treatment': Treatment.objects.all()})
 
 
 def patient_pasthistory(request, patid):
