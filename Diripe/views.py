@@ -16,6 +16,11 @@ def login(request):
     if request.method == "POST":
         empid = request.POST.get('empid')
         emppasswd = request.POST.get('emppasswd')
+
+        if not empid or not emppasswd:
+            messages.error(request, "IDまたはパスワードを入力してください")
+            return render(request, 'login.html')
+
         try:
             employee = Employee.objects.get(empid=empid)
         except Employee.DoesNotExist:
@@ -45,23 +50,29 @@ def empregistration(request):
         empid = request.POST.get('empid')
         empfname = request.POST.get('empfname')
         emplname = request.POST.get('emplname')
-        emppasswd = request.POST.get('emppasswd')
+        emppass = request.POST.get('emppass')
+        empwd = request.POST.get('empwd')
         emprole = request.POST.get('emprole')
 
-        if Employee.objects.filter(empid=empid).exists():
+        # チェックリスト
+        required_fields = [empid, empfname, emplname, emppass, empwd, emprole]
+        if not all(required_fields):
+            messages.error(request, 'すべての項目を入力してください。')
+        elif emppass != empwd:
+            messages.error(request, 'パスワードが一致しません。')
+        elif Employee.objects.filter(empid=empid).exists():
             messages.error(request, 'このIDはすでに登録してあります。')
         else:
             employee = Employee(
                 empid=empid, empfname=empfname,
-                emplname=emplname, emppasswd=emppasswd,
+                emplname=emplname, emppasswd=emppass,
                 emprole=emprole
             )
             employee.save()
             messages.success(request, '従業員が登録されました。')
-            return redirect('admin/empregistration.html')
+            return render(request, 'admin/toroku.html')
 
     return render(request, 'admin/empregistration.html')
-
 
 def vendor_toroku(request):
     if request.method == "POST":
@@ -72,10 +83,15 @@ def vendor_toroku(request):
         shihonkin = request.POST.get('shihonkin')
         nouki = request.POST.get('nouki')
 
-        if Shiiregyosya.objects.filter(shiireid=shiireid, shiiremei=shiiremei,
-                                       shiireaddress=shiireaddress, shiiretel=shiiretel,
-                                       shihonkin=shihonkin, nouki=nouki
-                                       ).exists():
+        # チェックリスト
+        required_fields = [shiireid, shiiremei, shiireaddress, shiiretel, shihonkin, nouki]
+        if not all(required_fields):
+            messages.error(request, 'すべての項目を入力してください。')
+        elif Shiiregyosya.objects.filter(
+            shiireid=shiireid, shiiremei=shiiremei,
+            shiireaddress=shiireaddress, shiiretel=shiiretel,
+            shihonkin=shihonkin, nouki=nouki
+        ).exists():
             messages.error(request, 'この仕入先はすでに登録してあります。')
         else:
             shiiregyosya = Shiiregyosya.objects.create(
@@ -83,23 +99,23 @@ def vendor_toroku(request):
                 shiireaddress=shiireaddress, shiiretel=shiiretel,
                 shihonkin=shihonkin, nouki=nouki
             )
+            messages.success(request, '仕入先が登録されました。')
             return render(request, 'shiire_success.html', {'shiiregyosya': shiiregyosya})
 
     return render(request, 'admin/record_pras.html')
 
-
 def vendor_search(request):
     if request.method == 'GET':
-        shiiregyosya = Shiiregyosya.objects.all()
-        return render(request, 'admin/vendor.html', {'shiiregyosya': shiiregyosya})
+        shiiregyosyas = Shiiregyosya.objects.all()
+        return render(request, 'admin/vendor.html', {'shiiregyosyas': shiiregyosyas})
     elif request.method == 'POST':
         address = request.POST.get('shiireaddress')
         if address:
-            shiiregyosya = Shiiregyosya.objects.filter(shiireaddress__icontains=address)
+            shiiregyosyas = Shiiregyosya.objects.filter(shiireaddress=address)
         else:
-            shiiregyosya = Shiiregyosya.objects.none()
+            shiiregyosyas = Shiiregyosya.objects.none()
 
-        return render(request, 'admin/vendor.html', {'shiiregyosya': shiiregyosya})
+        return render(request, 'admin/vendor.html', {'shiiregyosyas': shiiregyosyas})
 
 
 def vendor_list(request):
@@ -200,7 +216,7 @@ def confirmation_re(request):
         employee.save()
 
         messages.success(request, '従業員情報が更新されました。')
-        return render(request,'toroku.success.html', {'employee': employee})  # 成功時のリダイレクト先を指定
+        return render(request,'henkou.html', {'employee': employee})  # 成功時のリダイレクト先を指定
 
     return render(request, 'reception/confirmation_re.html', {'employee': employee})
 
@@ -228,16 +244,21 @@ def patient_registration(request):
         hokenmei = request.POST.get('hokenmei')
         hokenexp = request.POST.get('hokenexp')
 
+        # チェックリスト
+        required_fields = [patid, patfname, patlname, hokenmei, hokenexp]
+        if not all(required_fields):
+            messages.error(request, 'すべての項目を入力してください。')
+            return render(request, 'reception/patient.registration.html')
+
         # 日付文字列をdateオブジェクトに変換
         try:
             hokenexp = string_to_date(hokenexp)
         except ValueError as e:
             messages.error(request, str(e))
             return render(request, 'reception/patient.registration.html')
+
         # 現在のUTC日付を取得
         today = timezone.now().date()
-
-        print(today)
 
         if Patient.objects.filter(patid=patid).exists():
             messages.error(request, 'このIDはすでに登録してあります。')
@@ -251,8 +272,7 @@ def patient_registration(request):
             messages.success(request, '患者が登録されました。')
             return render(request, 'toroku.success.html')
         else:
-            messages.error(request,'有効期限が過ぎています。')
-            return render(request,'reception/patient.registration.html')
+            messages.error(request, '有効期限が過ぎています。')
 
     return render(request, 'reception/patient.registration.html')
 

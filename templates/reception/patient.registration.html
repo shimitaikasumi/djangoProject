@@ -13,20 +13,20 @@
 
 <form method="POST">
     {% csrf_token %}
-        <label for="patid">患者ID</label>
-        <br><input type="text" id="patid" name="patid" placeholder="患者IDを入力"><br>
+        <br><label for="patid">患者ID</label>
+        <input type="text" id="patid" name="patid" placeholder="患者IDを入力">
         
-        <label for="patlname">姓</label>
-        <br><input type="text" id="patlname" name="patlname" placeholder="姓を入力">
+        <br><label for="patlname">姓</label>
+        <input type="text" id="patlname" name="patlname" placeholder="姓を入力">
         
-        <label for="patfname">名</label>
-        <br><input type="text" id="patfname" name="patfname" placeholder="名を入力">
+        <br><label for="patfname">名</label>
+        <input type="text" id="patfname" name="patfname" placeholder="名を入力">
         
-        <label for="hokenmei">保険証記号番号</label>
-        <br><input type="text" id="hokenmei" name="hokenmei" placeholder="保険証記号番号を入力">
+        <br><label for="hokenmei">保険証記号番号</label>
+        <input type="text" id="hokenmei" name="hokenmei" placeholder="保険証記号番号を入力">
         
-        <label for="hokenexp">有効期限</label>
-        <br><input type="date" id="hokenexp" name="hokenexp" placeholder="有効期限を入力">
+        <br><label for="hokenexp">有効期限</label>
+        <input type="date" id="hokenexp" name="hokenexp" placeholder="有効期限を入力">
         
         <p><input type="submit" value="登録"></p>
 </form>
