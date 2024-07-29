@@ -41,134 +41,191 @@ def login(request):
     return render(request, 'login.html')
 
 
+def logout_view(request):
+    logout(request)  # ユーザーをログアウト
+    request.session.flush()  # セッションをクリア
+    return redirect('login')
+
+
 def empregistration(request):
-    if request.method == 'GET':
-        employee = Employee.objects.all()
-        return render(request, 'admin/empregistration.html', {'employee': employee})
+    if 'empid' in request.session:
+        empcheck = Employee.objects.get(empid=request.session.get('empid'))
+        if empcheck.emprole == 1:
 
-    if request.method == 'POST':
-        empid = request.POST.get('empid')
-        empfname = request.POST.get('empfname')
-        emplname = request.POST.get('emplname')
-        emppass = request.POST.get('emppass')
-        empwd = request.POST.get('empwd')
-        emprole = request.POST.get('emprole')
+            if request.method == 'GET':
+                employee = Employee.objects.all()
+                return render(request, 'admin/empregistration.html', {'employee': employee})
 
-        # チェックリスト
-        required_fields = [empid, empfname, emplname, emppass, empwd, emprole]
-        if not all(required_fields):
-            messages.error(request, 'すべての項目を入力してください。')
-        elif emppass != empwd:
-            messages.error(request, 'パスワードが一致しません。')
-        elif Employee.objects.filter(empid=empid).exists():
-            messages.error(request, 'このIDはすでに登録してあります。')
+            if request.method == 'POST':
+                empid = request.POST.get('empid')
+                empfname = request.POST.get('empfname')
+                emplname = request.POST.get('emplname')
+                emppass = request.POST.get('emppass')
+                empwd = request.POST.get('empwd')
+                emprole = request.POST.get('emprole')
+
+                # チェックリスト
+                required_fields = [empid, empfname, emplname, emppass, empwd, emprole]
+                if not all(required_fields):
+                    messages.error(request, 'すべての項目を入力してください。')
+                elif emppass != empwd:
+                    messages.error(request, 'パスワードが一致しません。')
+                elif Employee.objects.filter(empid=empid).exists():
+                    messages.error(request, 'このIDはすでに登録してあります。')
+                else:
+                    employee = Employee(
+                        empid=empid, empfname=empfname,
+                        emplname=emplname, emppasswd=emppass,
+                        emprole=emprole
+                    )
+                    employee.save()
+                    messages.success(request, '従業員が登録されました。')
+                    return render(request, 'admin/toroku.html')
+
+            return render(request, 'admin/empregistration.html')
         else:
-            employee = Employee(
-                empid=empid, empfname=empfname,
-                emplname=emplname, emppasswd=emppass,
-                emprole=emprole
-            )
-            employee.save()
-            messages.success(request, '従業員が登録されました。')
-            return render(request, 'admin/toroku.html')
-
-    return render(request, 'admin/empregistration.html')
+            return redirect('login')
+    else:
+        return redirect('login')
 
 def vendor_toroku(request):
-    if request.method == "POST":
-        shiireid = request.POST.get('shiireid')
-        shiiremei = request.POST.get('shiiremei')
-        shiireaddress = request.POST.get('shiireaddress')
-        shiiretel = request.POST.get('shiiretel')
-        shihonkin = request.POST.get('shihonkin')
-        nouki = request.POST.get('nouki')
+    if 'empid' in request.session:
+        empcheck = Employee.objects.get(empid=request.session.get('empid'))
+        if empcheck.emprole == 1:
+            if request.method == "POST":
+                shiireid = request.POST.get('shiireid')
+                shiiremei = request.POST.get('shiiremei')
+                shiireaddress = request.POST.get('shiireaddress')
+                shiiretel = request.POST.get('shiiretel')
+                shihonkin = request.POST.get('shihonkin')
+                nouki = request.POST.get('nouki')
 
-        # チェックリスト
-        required_fields = [shiireid, shiiremei, shiireaddress, shiiretel, shihonkin, nouki]
-        if not all(required_fields):
-            messages.error(request, 'すべての項目を入力してください。')
-        elif Shiiregyosya.objects.filter(
-            shiireid=shiireid, shiiremei=shiiremei,
-            shiireaddress=shiireaddress, shiiretel=shiiretel,
-            shihonkin=shihonkin, nouki=nouki
-        ).exists():
-            messages.error(request, 'この仕入先はすでに登録してあります。')
+                # チェックリスト
+                required_fields = [shiireid, shiiremei, shiireaddress, shiiretel, shihonkin, nouki]
+                if not all(required_fields):
+                    messages.error(request, 'すべての項目を入力してください。')
+                elif Shiiregyosya.objects.filter(
+                    shiireid=shiireid, shiiremei=shiiremei,
+                    shiireaddress=shiireaddress, shiiretel=shiiretel,
+                    shihonkin=shihonkin, nouki=nouki
+                ).exists():
+                    messages.error(request, 'この仕入先はすでに登録してあります。')
+                else:
+                    shiiregyosya = Shiiregyosya.objects.create(
+                        shiireid=shiireid, shiiremei=shiiremei,
+                        shiireaddress=shiireaddress, shiiretel=shiiretel,
+                        shihonkin=shihonkin, nouki=nouki
+                    )
+                    messages.success(request, '仕入先が登録されました。')
+                    return render(request, 'shiire_success.html', {'shiiregyosya': shiiregyosya})
+
+            return render(request, 'admin/record_pras.html')
         else:
-            shiiregyosya = Shiiregyosya.objects.create(
-                shiireid=shiireid, shiiremei=shiiremei,
-                shiireaddress=shiireaddress, shiiretel=shiiretel,
-                shihonkin=shihonkin, nouki=nouki
-            )
-            messages.success(request, '仕入先が登録されました。')
-            return render(request, 'shiire_success.html', {'shiiregyosya': shiiregyosya})
+            return redirect('login')
+    else:
+        return redirect('login')
 
-    return render(request, 'admin/record_pras.html')
 
 def vendor_search(request):
-    if request.method == 'GET':
-        shiiregyosyas = Shiiregyosya.objects.all()
-        return render(request, 'admin/vendor.html', {'shiiregyosyas': shiiregyosyas})
-    elif request.method == 'POST':
-        address = request.POST.get('shiireaddress')
-        if address:
-            shiiregyosyas = Shiiregyosya.objects.filter(shiireaddress=address)
-        else:
-            shiiregyosyas = Shiiregyosya.objects.none()
+    if 'empid' in request.session:
+        empcheck = Employee.objects.get(empid=request.session.get('empid'))
+        if empcheck.emprole == 1:
+            if request.method == 'GET':
+                shiiregyosyas = Shiiregyosya.objects.all()
+                return render(request, 'admin/vendor.html', {'shiiregyosyas': shiiregyosyas})
+            elif request.method == 'POST':
+                address = request.POST.get('shiireaddress')
+                if address:
+                    shiiregyosyas = Shiiregyosya.objects.filter(shiireaddress=address)
+                else:
+                    shiiregyosyas = Shiiregyosya.objects.none()
 
-        return render(request, 'admin/vendor.html', {'shiiregyosyas': shiiregyosyas})
+                return render(request, 'admin/vendor.html', {'shiiregyosyas': shiiregyosyas})
+        else:
+            return redirect('login')
+    else:
+        return redirect('login')
 
 
 def vendor_list(request):
-    if request.method == 'GET':
-        shiiregyosyas = Shiiregyosya.objects.all()
-        return render(request, 'admin/vendor.html', {'shiiregyosyas': shiiregyosyas})
+    if 'empid' in request.session:
+        empcheck = Employee.objects.get(empid=request.session.get('empid'))
+        if empcheck.emprole == 1:
+            if request.method == 'GET':
+                shiiregyosyas = Shiiregyosya.objects.all()
+                return render(request, 'admin/vendor.html', {'shiiregyosyas': shiiregyosyas})
+        else:
+            return redirect('login')
+    else:
+        return redirect('login')
 
 
 def nachange_search(request):
-    if request.method == 'GET':
-        employees = Employee.objects.all()
-        return render(request, 'admin/nachange.html', {'employees': employees})
-    elif request.method == 'POST':
-        id = request.POST.get('empid')
-        if id:
-            employees = Employee.objects.filter(empid=id)
-        else:
-            employees = Employee.objects.none()
+    if 'empid' in request.session:
+        empcheck = Employee.objects.get(empid=request.session.get('empid'))
+        if empcheck.emprole == 1:
+            if request.method == 'GET':
+                employees = Employee.objects.all()
+                return render(request, 'admin/nachange.html', {'employees': employees})
+            elif request.method == 'POST':
+                id = request.POST.get('empid')
+                if id:
+                    employees = Employee.objects.filter(empid=id)
+                else:
+                    employees = Employee.objects.none()
 
-        return render(request, 'admin/nachange.html', {'employees': employees})
+                return render(request, 'admin/nachange.html', {'employees': employees})
+        else:
+            return redirect('login')
+    else:
+        return redirect('login')
 
 
 def nachange_list(request):
-    if request.method == 'GET':
-        employees = Employee.objects.all()
-        return render(request, 'admin/nachange.html', {'employees': employees})
+    if 'empid' in request.session:
+        empcheck = Employee.objects.get(empid=request.session.get('empid'))
+        if empcheck.emprole == 1:
+            if request.method == 'GET':
+                employees = Employee.objects.all()
+                return render(request, 'admin/nachange.html', {'employees': employees})
+        else:
+            return redirect('login')
+    else:
+        return redirect('login')
 
 
 def confirmation(request):
-    employee = Employee.objects.get(empid=request.POST.get('empid'))
+    if 'empid' in request.session:
+        empcheck = Employee.objects.get(empid=request.session.get('empid'))
+        if empcheck.emprole == 1:
+            employee = Employee.objects.get(empid=request.POST.get('empid'))
 
-    if request.method == 'GET':
-        employee = Employee.objects.filter(empid=request.POST.get('empid'))
-        return render(request, 'admin/confirmation.html', {'employee': employee})
+            if request.method == 'GET':
+                employee = Employee.objects.filter(empid=request.POST.get('empid'))
+                return render(request, 'admin/confirmation.html', {'employee': employee})
 
-    if request.method == 'POST':
-        new_emplname = request.POST.get('newemplname')
-        new_empfname = request.POST.get('newempfname')
+            if request.method == 'POST':
+                new_emplname = request.POST.get('newemplname')
+                new_empfname = request.POST.get('newempfname')
 
-        # 入力が空かどうかをチェック
-        if not new_emplname or not new_empfname:
-            messages.error(request, '姓と名を入力してください。')
+                # 入力が空かどうかをチェック
+                if not new_emplname or not new_empfname:
+                    messages.error(request, '姓と名を入力してください。')
+                    return render(request, 'admin/confirmation.html', {'employee': employee})
+
+                # フォームが有効な場合、データベースを更新
+                employee.emplname = new_emplname
+                employee.empfname = new_empfname
+                employee.save()
+
+                messages.success(request, '従業員情報が更新されました。')
+                return render(request,'toroku.success.html', {'employee': employee})  # 成功時のリダイレクト先を指定
+
             return render(request, 'admin/confirmation.html', {'employee': employee})
-
-        # フォームが有効な場合、データベースを更新
-        employee.emplname = new_emplname
-        employee.empfname = new_empfname
-        employee.save()
-
-        messages.success(request, '従業員情報が更新されました。')
-        return render(request,'toroku.success.html', {'employee': employee})  # 成功時のリダイレクト先を指定
-
-    return render(request, 'admin/confirmation.html', {'employee': employee})
+        else:
+            return redirect('login')
+    else:
+        return redirect('login')
 
 
 def employeeinfchg_search(request):
